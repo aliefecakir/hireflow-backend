@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: hireflow-backend
+  datasource:
+    url: jdbc:postgresql://aws-0-ap-northeast-1.pooler.supabase.com:6543/postgres?sslmode=require
+    username: postgres.tsdxurkrxhfwrpdgpwmn
+    password: asdfgg160ggq
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+        implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyJpaCompliantImpl
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        globally_quoted_identifiers: true
+
+supabase:
+  jwt:
+    jwk-set-uri: https://tsdxurkrxhfwrpdgpwmn.supabase.co/auth/v1/.well-known/jwks.json
