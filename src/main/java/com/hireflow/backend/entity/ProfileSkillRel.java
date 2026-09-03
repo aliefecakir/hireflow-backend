@@ -1,0 +1,119 @@
+package com.hireflow.backend.entity;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
+import jakarta.persistence.Table;
+
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+@Entity
+@Table(name = "\"PRFL_SKILL_REL\"")
+public class ProfileSkillRel {
+
+    @Id
+    @Column(name = "\"PRFL_SKILL_REL_ID\"", columnDefinition = "uuid")
+    private UUID prflSkillRelId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "\"PRFL_ID\"", referencedColumnName = "\"PROFILE_ID\"")
+    private Profile profile;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "\"SKILL_ID\"", referencedColumnName = "\"SKILL_ID\"")
+    private Skill skill;
+
+    @Column(name = "\"CDATE\"")
+    private LocalDateTime cdate;
+
+    @Column(name = "\"UDATE\"")
+    private LocalDateTime udate;
+
+    @Column(name = "\"CUSER\"", columnDefinition = "uuid")
+    private UUID cuser;
+
+    @Column(name = "\"UUSER\"", columnDefinition = "uuid")
+    private UUID uuser;
+
+    public ProfileSkillRel() {
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        if (prflSkillRelId == null) {
+            prflSkillRelId = UUID.randomUUID();
+        }
+        LocalDateTime now = LocalDateTime.now();
+        if (cdate == null) {
+            cdate = now;
+        }
+        udate = now;
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        udate = LocalDateTime.now();
+    }
+
+    public UUID getPrflSkillRelId() {
+        return prflSkillRelId;
+    }
+
+    public void setPrflSkillRelId(UUID prflSkillRelId) {
+        this.prflSkillRelId = prflSkillRelId;
+    }
+
+    public Profile getProfile() {
+        return profile;
+    }
+
+    public void setProfile(Profile profile) {
+        this.profile = profile;
+    }
+
+    public Skill getSkill() {
+        return skill;
+    }
+
+    public void setSkill(Skill skill) {
+        this.skill = skill;
+    }
+
+    public LocalDateTime getCdate() {
+        return cdate;
+    }
+
+    public void setCdate(LocalDateTime cdate) {
+        this.cdate = cdate;
+    }
+
+    public LocalDateTime getUdate() {
+        return udate;
+    }
+
+    public void setUdate(LocalDateTime udate) {
+        this.udate = udate;
+    }
+
+    public UUID getCuser() {
+        return cuser;
+    }
+
+    public void setCuser(UUID cuser) {
+        this.cuser = cuser;
+    }
+
+    public UUID getUuser() {
+        return uuser;
+    }
+
+    public void setUuser(UUID uuser) {
+        this.uuser = uuser;
+    }
+}

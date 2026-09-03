@@ -2,10 +2,14 @@ spring:
   application:
     name: hireflow-backend
   datasource:
-    url: jdbc:postgresql://aws-0-ap-northeast-1.pooler.supabase.com:6543/postgres?sslmode=require
+    url: jdbc:postgresql://aws-0-ap-northeast-1.pooler.supabase.com:6543/postgres?sslmode=require&prepareThreshold=0
     username: postgres.tsdxurkrxhfwrpdgpwmn
     password: asdfgg160ggq
     driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 5
+      data-source-properties:
+        prepareThreshold: 0
 
   jpa:
     hibernate:

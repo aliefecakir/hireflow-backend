@@ -33,6 +33,10 @@ public class UserController {
             @AuthenticationPrincipal Jwt jwt
     ) {
         System.out.println("=== GET /api/v1/users/me ===");
+
+        if (jwt == null) {
+            return ResponseEntity.status(401).build();
+        }
         
         // JWT'den email claim'ini al
         String email = jwt.getClaimAsString("email");
