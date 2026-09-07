@@ -1,7 +1,6 @@
 package com.hireflow.backend.dto;
 
 import java.util.List;
-import java.util.UUID;
 
 /**
  * Soru ve şıklarını içeren yanıt
@@ -9,7 +8,7 @@ import java.util.UUID;
 public record QuestionResponse(
         Long id,
         String questionText,
-        UUID tpId,
+        Long tpId,
         Integer minScore,
         Integer maxScore,
         Short isAssmt,

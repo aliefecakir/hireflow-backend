@@ -12,5 +12,5 @@ public interface PostRepository extends JpaRepository<Post, UUID> {
 
     List<Post> findAllByOrderByCdateDesc();
 
-    List<Post> findAllByStIdOrderByCdateDesc(UUID stId);
+    List<Post> findAllByStIdOrderByCdateDesc(Long stId);
 }

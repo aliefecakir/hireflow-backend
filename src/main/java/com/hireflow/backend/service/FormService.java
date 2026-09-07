@@ -18,4 +18,6 @@ public interface FormService {
     FormResponse createForm(CreateFormRequest request);
 
     FormResponse updateForm(Long formId, CreateFormRequest request);
+
+    void deactivateExpiredForms();
 }

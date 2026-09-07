@@ -5,6 +5,7 @@ import com.hireflow.backend.dto.AcademyAppStatusResponse;
 import com.hireflow.backend.dto.AcademyEvaluateResponse;
 import com.hireflow.backend.dto.EvaluateAcademyAppRequest;
 import com.hireflow.backend.dto.FormApplicationResponse;
+import com.hireflow.backend.dto.ManualScoreResponse;
 import com.hireflow.backend.dto.UpdateAcademyAppStatusRequest;
 import com.hireflow.backend.entity.User;
 import com.hireflow.backend.repository.UserRepository;
@@ -64,6 +65,15 @@ public class AcademyEvaluationController {
             @AuthenticationPrincipal Jwt jwt
     ) {
         return ResponseEntity.ok(academyEvaluationService.evaluateApplication(appId, request, currentUserId(jwt)));
+    }
+
+    @PostMapping("/{appId}/manual-score")
+    public ResponseEntity<ManualScoreResponse> saveManualScore(
+            @PathVariable("appId") Long appId,
+            @Valid @RequestBody EvaluateAcademyAppRequest.ManualScoreRequest request,
+            @AuthenticationPrincipal Jwt jwt
+    ) {
+        return ResponseEntity.ok(academyEvaluationService.saveManualScore(appId, request, currentUserId(jwt)));
     }
 
     @PutMapping("/{appId}/status")

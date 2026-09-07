@@ -140,12 +140,12 @@ public class PostServiceImpl implements PostService {
     }
 
     private List<PostResponse> toResponseList(List<Post> posts, Set<UUID> appliedPostIds) {
-        Set<UUID> statusIds = posts.stream()
+        Set<Long> statusIds = posts.stream()
                 .map(Post::getStId)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toSet());
 
-        Map<UUID, GnlSt> statusesById = gnlStRepository.findAllById(statusIds).stream()
+        Map<Long, GnlSt> statusesById = gnlStRepository.findAllById(statusIds).stream()
                 .collect(Collectors.toMap(GnlSt::getGnlStId, Function.identity()));
 
         return posts.stream()

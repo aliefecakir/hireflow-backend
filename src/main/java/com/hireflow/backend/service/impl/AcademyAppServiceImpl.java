@@ -24,6 +24,8 @@ import com.hireflow.backend.repository.QuestionChoiceRepository;
 import com.hireflow.backend.repository.QuestionRepository;
 import com.hireflow.backend.repository.UniversityRepository;
 import com.hireflow.backend.service.AcademyAppService;
+import com.hireflow.backend.service.FormService;
+import com.hireflow.backend.util.FormWindow;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -47,9 +49,9 @@ public class AcademyAppServiceImpl implements AcademyAppService {
     private static final String ACADEMY_APP_ENTITY = "ACADEMY_APP";
     private static final String PENDING_SCORE_STATUS_NAME = "Puanlanacak";
     private static final Short OTHER_CHOICE = 1;
-    private static final Short ACTIVE = 1;
     private static final Short CANDIDATE_QUESTION = 0;
 
+    private final FormService formService;
     private final FormRepository formRepository;
     private final FormQuestionRelRepository formQuestionRelRepository;
     private final UniversityRepository universityRepository;
@@ -61,6 +63,7 @@ public class AcademyAppServiceImpl implements AcademyAppService {
     private final QuestionAnswerRepository questionAnswerRepository;
 
     public AcademyAppServiceImpl(
+            FormService formService,
             FormRepository formRepository,
             FormQuestionRelRepository formQuestionRelRepository,
             UniversityRepository universityRepository,
@@ -71,6 +74,7 @@ public class AcademyAppServiceImpl implements AcademyAppService {
             QuestionChoiceRepository questionChoiceRepository,
             QuestionAnswerRepository questionAnswerRepository
     ) {
+        this.formService = formService;
         this.formRepository = formRepository;
         this.formQuestionRelRepository = formQuestionRelRepository;
         this.universityRepository = universityRepository;
@@ -89,7 +93,7 @@ public class AcademyAppServiceImpl implements AcademyAppService {
         }
 
         List<AcademyApp> applications = academyAppRepository.findByForm_FormIdOrderByAcademyAppIdDesc(formId);
-        Map<UUID, GnlSt> statuses = loadStatuses(applications);
+        Map<Long, GnlSt> statuses = loadStatuses(applications);
 
         return applications.stream()
                 .map(app -> toFormApplicationResponse(app, statuses.get(app.getStId())))
@@ -131,10 +135,20 @@ public class AcademyAppServiceImpl implements AcademyAppService {
     @Override
     @Transactional
     public AcademyApplyResponse applyToForm(Long formId, AcademyApplyRequest request) {
+        formService.deactivateExpiredForms();
         Form form = formRepository.findById(formId)
                 .orElseThrow(() -> new NoSuchElementException("Form bulunamadı."));
-        if (form.getIsActv() == null || !ACTIVE.equals(form.getIsActv())) {
-            throw new BadRequestException("Yalnızca aktif formlara başvurulabilir.");
+
+        LocalDateTime now = LocalDateTime.now();
+        if (!FormWindow.isActive(form)) {
+            throw new BadRequestException(
+                    FormWindow.isExpired(form, now)
+                            ? "Başvuru süresi sona erdi."
+                            : "Yalnızca aktif formlara başvurulabilir."
+            );
+        }
+        if (!FormWindow.hasStarted(form, now)) {
+            throw new BadRequestException("Başvurular henüz başlamadı.");
         }
 
         // ÜNİVERSİTE VE BÖLÜM PUANLARINI VERİTABANINDAN ÇEK
@@ -236,8 +250,8 @@ public class AcademyAppServiceImpl implements AcademyAppService {
         return answer;
     }
 
-    private Map<UUID, GnlSt> loadStatuses(List<AcademyApp> applications) {
-        Set<UUID> statusIds = applications.stream()
+    private Map<Long, GnlSt> loadStatuses(List<AcademyApp> applications) {
+        Set<Long> statusIds = applications.stream()
                 .map(AcademyApp::getStId)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toSet());
@@ -248,7 +262,7 @@ public class AcademyAppServiceImpl implements AcademyAppService {
                 .collect(Collectors.toMap(GnlSt::getGnlStId, Function.identity()));
     }
 
-    private GnlSt resolveAcademyStatus(UUID stId) {
+    private GnlSt resolveAcademyStatus(Long stId) {
         if (stId == null) {
             throw new BadRequestException("Durum bilgisi zorunludur.");
         }

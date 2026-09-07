@@ -5,7 +5,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 import java.util.List;
-import java.util.UUID;
 
 /**
  * Soru güncelleme isteği.
@@ -14,7 +13,7 @@ import java.util.UUID;
  */
 public record UpdateQuestionRequest(
         String questionText,
-        UUID tpId,
+        Long tpId,
         Integer minScore,
         Integer maxScore,
         Short isAssmt,

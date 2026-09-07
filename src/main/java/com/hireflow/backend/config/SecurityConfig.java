@@ -58,6 +58,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/academy/forms").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/academy/forms/*/questions").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/academy/forms/{formId}/questions").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/academy/questions/types").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/academy/forms/*/apply").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/academy/forms/{formId}/apply").permitAll()
                 .requestMatchers("/api/**").authenticated()

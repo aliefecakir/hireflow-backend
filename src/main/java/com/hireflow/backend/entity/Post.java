@@ -33,8 +33,8 @@ public class Post {
     @Column(name = "\"REQ_DEPT\"")
     private String reqDept;
 
-    @Column(name = "\"ST_ID\"", columnDefinition = "uuid")
-    private UUID stId;
+    @Column(name = "\"ST_ID\"")
+    private Long stId;
 
     @Column(name = "\"CDATE\"")
     private LocalDateTime cdate;
@@ -106,11 +106,11 @@ public class Post {
         this.reqDept = reqDept;
     }
 
-    public UUID getStId() {
+    public Long getStId() {
         return stId;
     }
 
-    public void setStId(UUID stId) {
+    public void setStId(Long stId) {
         this.stId = stId;
     }
 

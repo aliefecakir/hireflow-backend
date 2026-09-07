@@ -5,14 +5,13 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 import java.util.List;
-import java.util.UUID;
 
 /**
  * Soru ve şıklarını birlikte oluşturma isteği
  */
 public record CreateQuestionRequest(
         @NotBlank String questionText,
-        @NotNull UUID tpId,
+        @NotNull Long tpId,
         @NotNull Integer minScore,
         @NotNull Integer maxScore,
         Short isAssmt,

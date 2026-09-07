@@ -6,10 +6,9 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Repository
-public interface GnlStRepository extends JpaRepository<GnlSt, UUID> {
+public interface GnlStRepository extends JpaRepository<GnlSt, Long> {
 
     Optional<GnlSt> findByEntCodeNameAndShrtCode(String entCodeName, String shrtCode);
 

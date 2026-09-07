@@ -18,7 +18,6 @@ import org.hibernate.annotations.DynamicUpdate;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @Getter
 @Setter
@@ -38,8 +37,8 @@ public class Question extends BaseEntity {
     @Column(name = "\"QUESTION_TEXT\"", nullable = false)
     private String questionText;
 
-    @Column(name = "\"TP_ID\"", nullable = false, columnDefinition = "uuid")
-    private UUID tpId;
+    @Column(name = "\"TP_ID\"", nullable = false)
+    private Long tpId;
 
     @Column(name = "\"MIN_SCORE\"", nullable = false)
     private Integer minScore;

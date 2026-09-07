@@ -5,15 +5,13 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
-import java.util.UUID;
-
 @Entity
 @Table(name = "\"GNL_ST\"")
 public class GnlSt {
 
     @Id
-    @Column(name = "\"GNL_ST_ID\"", columnDefinition = "uuid")
-    private UUID gnlStId;
+    @Column(name = "\"GNL_ST_ID\"")
+    private Long gnlStId;
 
     @Column(name = "\"NAME\"")
     private String name;
@@ -30,11 +28,11 @@ public class GnlSt {
     public GnlSt() {
     }
 
-    public UUID getGnlStId() {
+    public Long getGnlStId() {
         return gnlStId;
     }
 
-    public void setGnlStId(UUID gnlStId) {
+    public void setGnlStId(Long gnlStId) {
         this.gnlStId = gnlStId;
     }
 

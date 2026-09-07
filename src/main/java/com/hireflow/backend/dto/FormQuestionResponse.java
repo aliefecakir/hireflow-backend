@@ -1,7 +1,6 @@
 package com.hireflow.backend.dto;
 
 import java.util.List;
-import java.util.UUID;
 
 /**
  * Adayın dolduracağı form sorusu (isAssmt = 0)
@@ -9,7 +8,9 @@ import java.util.UUID;
 public record FormQuestionResponse(
         Long questionId,
         String questionText,
-        UUID tpId,
+        Long tpId,
+        String tpShrtCode,
+        String tpName,
         Integer minScore,
         Integer maxScore,
         Integer ordNo,

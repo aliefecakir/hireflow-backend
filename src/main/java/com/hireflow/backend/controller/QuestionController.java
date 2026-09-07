@@ -16,7 +16,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/academy/questions")
-@PreAuthorize("hasRole('ACADEMY_MNGR')")
 public class QuestionController {
 
     private final QuestionService questionService;
@@ -26,6 +25,7 @@ public class QuestionController {
     }
 
     @GetMapping
+    @PreAuthorize("hasRole('ACADEMY_MNGR')")
     public ResponseEntity<List<QuestionResponse>> getActiveQuestions() {
         return ResponseEntity.ok(questionService.getActiveQuestions());
     }
@@ -36,11 +36,13 @@ public class QuestionController {
     }
 
     @GetMapping("/{id}/usage")
+    @PreAuthorize("hasRole('ACADEMY_MNGR')")
     public ResponseEntity<QuestionUsageResponse> getQuestionUsage(@PathVariable("id") Long questionId) {
         return ResponseEntity.ok(questionService.getQuestionUsage(questionId));
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ACADEMY_MNGR')")
     public ResponseEntity<QuestionResponse> createQuestion(
             @Valid @RequestBody CreateQuestionRequest request
     ) {
@@ -49,6 +51,7 @@ public class QuestionController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ACADEMY_MNGR')")
     public ResponseEntity<QuestionResponse> updateQuestion(
             @PathVariable("id") Long questionId,
             @Valid @RequestBody UpdateQuestionRequest request
@@ -57,6 +60,7 @@ public class QuestionController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ACADEMY_MNGR')")
     public ResponseEntity<Void> deleteQuestion(@PathVariable("id") Long questionId) {
         questionService.deleteQuestion(questionId);
         return ResponseEntity.noContent().build();

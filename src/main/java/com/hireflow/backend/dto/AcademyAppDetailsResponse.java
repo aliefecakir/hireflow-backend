@@ -1,7 +1,6 @@
 package com.hireflow.backend.dto;
 
 import java.util.List;
-import java.util.UUID;
 
 /**
  * Aday profili, form cevapları ve boş mülakat formu
@@ -18,7 +17,7 @@ public record AcademyAppDetailsResponse(
         Integer depScore,
         Integer totalScore,
         Integer interviewScore,
-        UUID stId,
+        Long stId,
         String statusName,
         String statusDescr,
         List<CandidateAnswer> answers,
@@ -31,10 +30,12 @@ public record AcademyAppDetailsResponse(
             Long selectedChoiceId,
             List<Long> selectedChoiceIds,
             String answerText,
-            UUID tpId,
+            Long tpId,
             Integer minScore,
             Integer maxScore,
             Integer score,
+            Integer ordNo,
+            Boolean manuallyScored,
             List<Choice> choices
     ) {
 
@@ -54,7 +55,7 @@ public record AcademyAppDetailsResponse(
             Integer minScore,
             Integer maxScore,
             Integer ordNo,
-            UUID tpId,
+            Long tpId,
             String tpShrtCode,
             String answerText,
             Long selectedChoiceId,

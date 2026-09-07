@@ -16,8 +16,8 @@ import java.util.UUID;
 public class GeneralType {
 
     @Id
-    @Column(name = "GNL_TP_ID", columnDefinition = "uuid")
-    private UUID gnlTpId;
+    @Column(name = "GNL_TP_ID")
+    private Long gnlTpId;
 
     @Column(name = "NAME")
     private String name;

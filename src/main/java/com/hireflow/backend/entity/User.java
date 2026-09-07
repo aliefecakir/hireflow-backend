@@ -28,8 +28,8 @@ public class User {
     @Column(name = "EMAIL", nullable = false, unique = true)
     private String email;
 
-    @Column(name = "ST_ID", columnDefinition = "uuid")
-    private UUID stId;
+    @Column(name = "ST_ID")
+    private Long stId;
 
     @Column(name = "CDATE")
     private LocalDateTime cdate;

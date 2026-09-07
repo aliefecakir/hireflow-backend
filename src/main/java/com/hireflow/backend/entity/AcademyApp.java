@@ -80,8 +80,8 @@ public class AcademyApp extends BaseEntity {
     @Column(name = "\"INTERVIEW_SCORE\"", nullable = false)
     private Integer interviewScore = 0;
 
-    @Column(name = "\"ST_ID\"", nullable = false, columnDefinition = "uuid")
-    private UUID stId;
+    @Column(name = "\"ST_ID\"", nullable = false)
+    private Long stId;
 
     @Column(name = "\"STATUS_DESCR\"")
     private String statusDescr;
