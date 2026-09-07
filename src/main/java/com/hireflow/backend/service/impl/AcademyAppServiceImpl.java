@@ -224,7 +224,11 @@ public class AcademyAppServiceImpl implements AcademyAppService {
         answer.setAcademyApp(academyApp);
         answer.setQuestion(question);
         answer.setQuestionChoice(choice);
-        answer.setScore(choice != null && choice.getScore() != null ? choice.getScore() : 0);
+        if (openEnded || otherSelected) {
+            answer.setScore(0);
+        } else {
+            answer.setScore(choice != null && choice.getScore() != null ? choice.getScore() : 0);
+        }
         if (openEnded || otherSelected || answerRequest.answerText() != null) {
             answer.setAnswerText(answerRequest.answerText());
         }

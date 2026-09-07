@@ -40,6 +40,7 @@ public class AcademyEvaluationServiceImpl implements AcademyEvaluationService {
 
     private static final Short CANDIDATE_QUESTION = 0;
     private static final Short ASSESSMENT_QUESTION = 1;
+    private static final Short OTHER_CHOICE = 1;
 
     private final AcademyAppRepository academyAppRepository;
     private final QuestionAnswerRepository questionAnswerRepository;
@@ -190,25 +191,40 @@ public class AcademyEvaluationServiceImpl implements AcademyEvaluationService {
                     throw new BadRequestException("Yalnızca aday sorularına manuel puan verilebilir: " + manualScore.questionId());
                 }
 
-                // Max score kontrolü
-                Integer maxScore = question.getMaxScore() != null ? question.getMaxScore() : 10;
+                // Max score kontrolü: açık uçlu soruda question.maxScore,
+                // “Diğer” şıkkında o şıkkın score alanı üst sınırdır.
+                List<QuestionAnswer> existingAnswers = questionAnswerRepository
+                        .findByAcademyApp_AcademyAppIdAndQuestion_QuestionId(appId, manualScore.questionId());
+
+                List<QuestionAnswer> otherAnswers = existingAnswers.stream()
+                        .filter(answer -> answer.getQuestionChoice() != null
+                                && OTHER_CHOICE.equals(answer.getQuestionChoice().getIsOther()))
+                        .toList();
+
+                List<QuestionAnswer> targets;
+                Integer maxScore;
+                if (!otherAnswers.isEmpty()) {
+                    targets = otherAnswers;
+                    Integer otherMax = otherAnswers.get(0).getQuestionChoice().getScore();
+                    maxScore = otherMax != null ? otherMax : 10;
+                } else {
+                    targets = existingAnswers;
+                    maxScore = question.getMaxScore() != null ? question.getMaxScore() : 10;
+                }
+
                 if (manualScore.score() < 0 || manualScore.score() > maxScore) {
                     throw new BadRequestException(
                         String.format("Puan 0 ile %d arasında olmalıdır: %d", maxScore, manualScore.questionId())
                     );
                 }
 
-                // İlgili QUESTION_ANSWER kaydını bul ve puanı güncelle
-                List<QuestionAnswer> existingAnswers = questionAnswerRepository
-                        .findByAcademyApp_AcademyAppIdAndQuestion_QuestionId(appId, manualScore.questionId());
-                
-                if (!existingAnswers.isEmpty()) {
-                    for (QuestionAnswer answer : existingAnswers) {
+                if (!targets.isEmpty()) {
+                    for (QuestionAnswer answer : targets) {
                         answer.setScore(manualScore.score());
                         answer.setUuser(evaluatorId);
                         answer.setUdate(java.time.LocalDateTime.now());
                     }
-                    questionAnswerRepository.saveAll(existingAnswers);
+                    questionAnswerRepository.saveAll(targets);
                 }
             }
         }
@@ -331,7 +347,17 @@ public class AcademyEvaluationServiceImpl implements AcademyEvaluationService {
                 .findFirst()
                 .orElse(null);
 
-        Integer score = answers.stream()
+        Integer otherScore = answers.stream()
+                .filter(answer -> answer.getQuestionChoice() != null
+                        && OTHER_CHOICE.equals(answer.getQuestionChoice().getIsOther()))
+                .map(QuestionAnswer::getScore)
+                .filter(Objects::nonNull)
+                .findFirst()
+                .orElse(null);
+
+        Integer score = otherScore != null
+                ? otherScore
+                : answers.stream()
                 .map(QuestionAnswer::getScore)
                 .filter(Objects::nonNull)
                 .findFirst()

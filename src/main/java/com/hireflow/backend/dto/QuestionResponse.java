@@ -13,7 +13,8 @@ public record QuestionResponse(
         Integer minScore,
         Integer maxScore,
         Short isAssmt,
-        List<Choice> choices
+        List<Choice> choices,
+        Long formCount
 ) {
 
     public record Choice(

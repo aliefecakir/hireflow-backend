@@ -19,6 +19,7 @@ public interface QuestionAnswerRepository extends JpaRepository<QuestionAnswer, 
     void deleteByAcademyApp_AcademyAppIdAndQuestion_IsAssmt(Long academyAppId, Short isAssmt);
 
     // Belirli bir başvurunun belirli bir soruya verdiği cevapları getir
+    @EntityGraph(attributePaths = {"question", "questionChoice"})
     List<QuestionAnswer> findByAcademyApp_AcademyAppIdAndQuestion_QuestionId(
             Long academyAppId,
             Long questionId
@@ -27,4 +28,7 @@ public interface QuestionAnswerRepository extends JpaRepository<QuestionAnswer, 
     // Bir başvurunun tüm cevaplarını getir (toplam puan hesabı için)
     @EntityGraph(attributePaths = {"question", "questionChoice"})
     List<QuestionAnswer> findByAcademyApp_AcademyAppId(Long academyAppId);
+
+    // Bir soruya kaç cevap verildiğini say
+    long countByQuestion_QuestionId(Long questionId);
 }
