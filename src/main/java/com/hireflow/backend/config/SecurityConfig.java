@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -52,8 +53,14 @@ public class SecurityConfig {
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             )
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/v1/test/public").permitAll() 
-                .requestMatchers("/api/**").authenticated()         
+                .requestMatchers("/api/v1/test/public").permitAll()
+                .requestMatchers(HttpMethod.OPTIONS, "/api/academy/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/academy/forms").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/academy/forms/*/questions").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/academy/forms/{formId}/questions").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/academy/forms/*/apply").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/academy/forms/{formId}/apply").permitAll()
+                .requestMatchers("/api/**").authenticated()
                 .anyRequest().permitAll()
             )
             .oauth2ResourceServer(oauth2 -> oauth2
