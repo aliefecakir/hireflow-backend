@@ -3,6 +3,7 @@ package com.hireflow.backend.dto;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/** Form özeti + bağlı tüm sorular (yönetici detay). */
 public record FormDetailResponse(
         Long formId,
         String title,

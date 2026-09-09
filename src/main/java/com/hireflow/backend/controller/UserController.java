@@ -48,7 +48,7 @@ public class UserController {
         
         System.out.println("Email from JWT: " + email);
         
-        // Kullanıcı profilini getir
+        // USER + USER_ROLE + GNL_TP.shrtCode
         UserProfileResponse profile = userService.getUserProfile(email);
         
         System.out.println("Profile retrieved: " + profile.email() + ", Roles: " + profile.roles());

@@ -8,6 +8,7 @@ import com.hireflow.backend.dto.SkillDto;
 import java.util.List;
 import java.util.UUID;
 
+/** Aday PROFILE, deneyim/skill/dil senkronu ve tamamlanma yüzdesi. */
 public interface ProfileService {
 
     ProfileDetailResponse getMyProfile(UUID currentUserId);

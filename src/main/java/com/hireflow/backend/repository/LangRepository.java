@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
+/** LANG katalog. */
 @Repository
 public interface LangRepository extends JpaRepository<Lang, UUID> {
 

@@ -3,6 +3,7 @@ package com.hireflow.backend.dto;
 import java.util.List;
 import java.util.UUID;
 
+/** Adayın kendi profilini güncelleme gövdesi. */
 public record ProfileUpdateRequest(
         String phone,
         String dept,

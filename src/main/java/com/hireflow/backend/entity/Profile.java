@@ -10,6 +10,7 @@ import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+/** PROFILE: aday CV özeti; USER_ID tekil. */
 @Entity
 @Table(name = "\"PROFILE\"")
 public class Profile {
@@ -37,7 +38,7 @@ public class Profile {
     private String cvUrl;
 
     @Column(name = "\"IS_CMPLTD\"", columnDefinition = "int2")
-    private Short isCmpltd;
+    private Short isCmpltd; // 8 alan doluysa 1
 
     @Column(name = "\"CDATE\"")
     private LocalDateTime cdate;
@@ -57,7 +58,7 @@ public class Profile {
     @PrePersist
     protected void onCreate() {
         if (profileId == null) {
-            profileId = UUID.randomUUID();
+            profileId = UUID.randomUUID(); // uygulama üretir
         }
         LocalDateTime now = LocalDateTime.now();
         if (cdate == null) {

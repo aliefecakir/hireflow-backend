@@ -8,6 +8,7 @@ import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+/** SKILL: yetenek katalog satırı. */
 @Entity
 @Table(name = "\"SKILL\"")
 public class Skill {

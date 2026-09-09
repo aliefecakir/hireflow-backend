@@ -7,9 +7,10 @@ import com.hireflow.backend.dto.ManualScoreResponse;
 
 import java.util.UUID;
 
+/** Akademi başvurusu detay, mülakat puanlama ve manuel skor. */
 public interface AcademyEvaluationService {
 
-    AcademyAppDetailsResponse getApplicationDetails(Long appId);
+    AcademyAppDetailsResponse getApplicationDetails(Long appId); // aday cevap + mülakat kriterleri
 
     AcademyEvaluateResponse evaluateApplication(Long appId, EvaluateAcademyAppRequest request, UUID evaluatorId);
 

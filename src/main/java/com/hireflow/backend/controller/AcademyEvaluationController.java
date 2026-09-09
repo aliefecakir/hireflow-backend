@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 import java.util.UUID;
 
+/** Akademi yöneticisinin başvuru detay, puanlama ve durum güncelleme API'si. */
 @RestController
 @RequestMapping("/api/academy/applications")
 @PreAuthorize("hasRole('ACADEMY_MNGR')")
@@ -46,11 +47,13 @@ public class AcademyEvaluationController {
         this.userRepository = userRepository;
     }
 
+    /** GNL_ST'teki akademi başvuru durumlarını listeler. */
     @GetMapping("/statuses")
     public ResponseEntity<List<AcademyAppStatusResponse>> getApplicationStatuses() {
         return ResponseEntity.ok(academyAppService.getApplicationStatuses());
     }
 
+    /** Aday cevapları + mülakat kriterlerini birlikte döner. */
     @GetMapping("/{appId}/details")
     public ResponseEntity<AcademyAppDetailsResponse> getApplicationDetails(
             @PathVariable("appId") Long appId
@@ -58,6 +61,7 @@ public class AcademyEvaluationController {
         return ResponseEntity.ok(academyEvaluationService.getApplicationDetails(appId));
     }
 
+    /** Mülakat şıklarını kaydeder, manuel puanları uygular, total/interview skorunu yazar. */
     @PostMapping("/{appId}/evaluate")
     public ResponseEntity<AcademyEvaluateResponse> evaluateApplication(
             @PathVariable("appId") Long appId,
@@ -67,6 +71,7 @@ public class AcademyEvaluationController {
         return ResponseEntity.ok(academyEvaluationService.evaluateApplication(appId, request, currentUserId(jwt)));
     }
 
+    /** Tek bir açık uçlu / "diğer" cevabına manuel puan basar. */
     @PostMapping("/{appId}/manual-score")
     public ResponseEntity<ManualScoreResponse> saveManualScore(
             @PathVariable("appId") Long appId,
@@ -76,6 +81,7 @@ public class AcademyEvaluationController {
         return ResponseEntity.ok(academyEvaluationService.saveManualScore(appId, request, currentUserId(jwt)));
     }
 
+    /** Başvuru ST_ID ve status açıklamasını günceller. */
     @PutMapping("/{appId}/status")
     public ResponseEntity<FormApplicationResponse> updateApplicationStatus(
             @PathVariable("appId") Long appId,
@@ -85,6 +91,7 @@ public class AcademyEvaluationController {
         return ResponseEntity.ok(academyAppService.updateApplicationStatus(appId, request, currentUserId(jwt)));
     }
 
+    /** JWT email (yoksa sub) ile USER tablosundan değerlendiren kullanıcıyı çözer. */
     private UUID currentUserId(Jwt jwt) {
         if (jwt == null) {
             throw new IllegalArgumentException("Oturum bilgisi alınamadı.");

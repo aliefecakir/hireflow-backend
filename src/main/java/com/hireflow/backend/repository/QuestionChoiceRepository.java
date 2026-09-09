@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+/** Soru şıkları; N+1 için IN sorgusu. */
 @Repository
 public interface QuestionChoiceRepository extends JpaRepository<QuestionChoice, Long> {
 

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.UUID;
 
+/** EXPERIENCE; profileId ile tarih sırası. */
 @Repository
 public interface ExperienceRepository extends JpaRepository<Experience, UUID> {
 

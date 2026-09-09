@@ -21,6 +21,7 @@ import org.hibernate.annotations.DynamicUpdate;
 import java.util.ArrayList;
 import java.util.List;
 
+/** QUESTION_CHOICE: şık metni, puanı, sırası; IS_OTHER=1 serbest metin. */
 @Getter
 @Setter
 @NoArgsConstructor

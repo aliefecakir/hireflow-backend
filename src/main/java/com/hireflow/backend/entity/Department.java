@@ -19,6 +19,7 @@ import org.hibernate.annotations.DynamicUpdate;
 import java.util.ArrayList;
 import java.util.List;
 
+/** DEPARTMENT: akademi puanı için bölüm katalogu. */
 @Getter
 @Setter
 @NoArgsConstructor

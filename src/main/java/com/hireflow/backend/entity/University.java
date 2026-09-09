@@ -19,6 +19,7 @@ import org.hibernate.annotations.DynamicUpdate;
 import java.util.ArrayList;
 import java.util.List;
 
+/** UNIVERSITY: akademi puanı için üniversite katalogu. */
 @Getter
 @Setter
 @NoArgsConstructor

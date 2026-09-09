@@ -18,6 +18,7 @@ public record CreateQuestionRequest(
         @Valid List<Choice> choices
 ) {
 
+    /** Şık metni, puanı, sırası; isOther=1 serbest metin. */
     public record Choice(
             @NotBlank String choiceText,
             Integer score,

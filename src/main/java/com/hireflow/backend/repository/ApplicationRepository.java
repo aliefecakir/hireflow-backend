@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+/** APP (ilan başvurusu) sorguları; post/aday/statü join fetch. */
 @Repository
 public interface ApplicationRepository extends JpaRepository<Application, UUID> {
 
@@ -62,5 +63,5 @@ public interface ApplicationRepository extends JpaRepository<Application, UUID> 
     Optional<Application> findDetailedById(@Param("appId") UUID appId);
 
     @Query("select a.post.postId from Application a where a.candidate.userId = :candidateId")
-    List<UUID> findPostIdsByCandidateId(@Param("candidateId") UUID candidateId);
+    List<UUID> findPostIdsByCandidateId(@Param("candidateId") UUID candidateId); // ilan listesinde applied
 }

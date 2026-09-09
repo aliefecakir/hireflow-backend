@@ -8,6 +8,7 @@ import com.hireflow.backend.dto.UpdateQuestionRequest;
 
 import java.util.List;
 
+/** Soru bankası ve şık yönetimi. */
 public interface QuestionService {
 
     List<QuestionResponse> getActiveQuestions();

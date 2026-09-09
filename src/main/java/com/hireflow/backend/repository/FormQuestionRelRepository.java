@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+/** Form-soru köprüsü; şıklarla birlikte yükler. */
 @Repository
 public interface FormQuestionRelRepository extends JpaRepository<FormQuestionRel, Long> {
 
@@ -25,5 +26,5 @@ public interface FormQuestionRelRepository extends JpaRepository<FormQuestionRel
     List<FormQuestionRel> findByQuestion_QuestionId(Long questionId);
 
     @Query("select r.question.questionId, count(r) from FormQuestionRel r group by r.question.questionId")
-    List<Object[]> countGroupedByQuestionId();
+    List<Object[]> countGroupedByQuestionId(); // soru listesinde formCount
 }

@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+/** USER tablosu: oturum, profil ve ilan başvurularının sahibi. */
 @Entity
 @Table(name = "\"USER\"")
 @Data
@@ -29,7 +30,7 @@ public class User {
     private String email;
 
     @Column(name = "ST_ID")
-    private Long stId;
+    private Long stId; // GNL_ST kullanıcı durumu
 
     @Column(name = "CDATE")
     private LocalDateTime cdate;

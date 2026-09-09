@@ -41,11 +41,12 @@ import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+/** Akademi başvurusu: form penceresi, uni/bölüm puanı, cevap kaydı, total score. */
 @Service
 @Transactional(readOnly = true)
 public class AcademyAppServiceImpl implements AcademyAppService {
 
-    private static final UUID SYSTEM_USER_ID = UUID.fromString("11111111-1111-1111-1111-111111111111");
+    private static final UUID SYSTEM_USER_ID = UUID.fromString("11111111-1111-1111-1111-111111111111"); // anonim başvuru CUSER
     private static final String ACADEMY_APP_ENTITY = "ACADEMY_APP";
     private static final String PENDING_SCORE_STATUS_NAME = "Puanlanacak";
     private static final Short OTHER_CHOICE = 1;
@@ -88,6 +89,7 @@ public class AcademyAppServiceImpl implements AcademyAppService {
 
     @Override
     public List<FormApplicationResponse> getFormApplications(Long formId) {
+        // Form yoksa 404; başvurular + GNL_ST isimleri tek seferde map'lenir
         if (!formRepository.existsById(formId)) {
             throw new NoSuchElementException("Form bulunamadı.");
         }
@@ -102,6 +104,7 @@ public class AcademyAppServiceImpl implements AcademyAppService {
 
     @Override
     public List<AcademyAppStatusResponse> getApplicationStatuses() {
+        // ACADEMY_APP entity'sine ait tüm durum kodları
         return gnlStRepository.findByEntCodeNameIgnoreCaseOrderByNameAsc(ACADEMY_APP_ENTITY).stream()
                 .map(status -> new AcademyAppStatusResponse(
                         status.getGnlStId(),
@@ -119,6 +122,7 @@ public class AcademyAppServiceImpl implements AcademyAppService {
             UpdateAcademyAppStatusRequest request,
             UUID evaluatorId
     ) {
+        // ST_ID + STATUS_DESCR + evaluatedBy
         AcademyApp app = academyAppRepository.findDetailedById(appId)
                 .orElseThrow(() -> new NoSuchElementException("Başvuru bulunamadı."));
         GnlSt status = resolveAcademyStatus(request.stId());
@@ -135,7 +139,7 @@ public class AcademyAppServiceImpl implements AcademyAppService {
     @Override
     @Transactional
     public AcademyApplyResponse applyToForm(Long formId, AcademyApplyRequest request) {
-        formService.deactivateExpiredForms();
+        formService.deactivateExpiredForms(); // önce süresi bitenleri kapat
         Form form = formRepository.findById(formId)
                 .orElseThrow(() -> new NoSuchElementException("Form bulunamadı."));
 
@@ -216,6 +220,7 @@ public class AcademyAppServiceImpl implements AcademyAppService {
     }
 
     private QuestionAnswer toQuestionAnswer(AcademyApp academyApp, AcademyApplyRequest.AnswerRequest answerRequest) {
+        // Şık skoru otomatik; açık uçlu / "diğer" 0 (yönetici sonra puanlar)
         Question question = questionRepository.findById(answerRequest.questionId())
                 .orElseThrow(() -> new BadRequestException(
                         "Soru bulunamadı: " + answerRequest.questionId()));

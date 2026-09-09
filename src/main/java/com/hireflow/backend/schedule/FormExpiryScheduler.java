@@ -4,6 +4,7 @@ import com.hireflow.backend.service.FormService;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+/** Süresi biten akademi formlarını her 60 saniyede pasife çeker. */
 @Component
 public class FormExpiryScheduler {
 
@@ -14,7 +15,7 @@ public class FormExpiryScheduler {
     }
 
     @Scheduled(fixedRate = 60_000)
-    public void deactivateExpiredForms() {
+    public void deactivateExpiredForms() { // EDATE < now olanları IS_ACTV=0 yapar
         formService.deactivateExpiredForms();
     }
 }

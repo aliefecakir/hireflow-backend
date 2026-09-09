@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
+/** SKILL katalog; aktif + isim arama. */
 @Repository
 public interface SkillRepository extends JpaRepository<Skill, UUID> {
 

@@ -3,6 +3,7 @@ package com.hireflow.backend.dto;
 import java.util.List;
 import java.util.UUID;
 
+/** Profil detayı + tamamlanma yüzdesi + ilişkili listeler. */
 public record ProfileDetailResponse(
         UUID userId,
         String name,

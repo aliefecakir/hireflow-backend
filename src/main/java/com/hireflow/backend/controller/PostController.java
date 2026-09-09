@@ -123,6 +123,7 @@ public class PostController {
         return ResponseEntity.noContent().build();
     }
 
+    /** JWT subject'ten oturum kullanıcısını çözer. */
     private boolean hasHrRole(Authentication authentication) {
         if (authentication == null) {
             return false;
@@ -132,6 +133,7 @@ public class PostController {
                 .anyMatch(ROLE_HR::equals);
     }
 
+    /** Statü kısa kodu ACTV mi. */
     private boolean isActive(PostResponse post) {
         return post.status() != null && ACTIVE_STATUS_CODE.equals(post.status().shrtCode());
     }

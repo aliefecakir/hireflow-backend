@@ -7,6 +7,7 @@ import com.hireflow.backend.dto.FormResponse;
 
 import java.util.List;
 
+/** Akademi FORM kayıtları, soru bağlama ve süre doldurma. */
 public interface FormService {
 
     List<FormResponse> getForms(boolean includeInactive);
@@ -19,5 +20,5 @@ public interface FormService {
 
     FormResponse updateForm(Long formId, CreateFormRequest request);
 
-    void deactivateExpiredForms();
+    void deactivateExpiredForms(); // EDATE geçmiş aktif formları pasife çeker
 }

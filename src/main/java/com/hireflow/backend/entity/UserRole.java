@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+/** USER_ROLE: kullanıcı ↔ GNL_TP rol (CAND, HR, ACADEMY_MNGR). */
 @Entity
 @Table(name = "\"USER_ROLE\"")
 @Data
@@ -25,7 +26,7 @@ public class UserRole {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "ROLE_TP_ID", referencedColumnName = "GNL_TP_ID")
-    private GeneralType roleType;
+    private GeneralType roleType; // SHRT_CODE -> ROLE_*
 
     @Column(name = "IS_ADMIN", columnDefinition = "int2")
     private Short isAdmin;

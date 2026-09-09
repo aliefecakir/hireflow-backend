@@ -19,6 +19,7 @@ import org.hibernate.annotations.DynamicUpdate;
 import java.util.ArrayList;
 import java.util.List;
 
+/** QUESTION: soru bankası; IS_ASSMT=0 aday, 1 mülakat. */
 @Getter
 @Setter
 @NoArgsConstructor
@@ -38,7 +39,7 @@ public class Question extends BaseEntity {
     private String questionText;
 
     @Column(name = "\"TP_ID\"", nullable = false)
-    private Long tpId;
+    private Long tpId; // GNL_TP soru tipi
 
     @Column(name = "\"MIN_SCORE\"", nullable = false)
     private Integer minScore;

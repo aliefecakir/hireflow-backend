@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+/** GNL_TP: tip sözlüğü (roller, soru tipleri). SHRT_CODE yetki kodudur. */
 @Entity
 @Table(name = "\"GNL_TP\"")
 @Data

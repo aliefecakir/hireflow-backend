@@ -12,6 +12,7 @@ import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+/** POST: iş ilanı; ST_ID = GNL_ST (ACTV/PASS/DRFT). */
 @Entity
 @Table(name = "\"POST\"")
 public class Post {
@@ -34,7 +35,7 @@ public class Post {
     private String reqDept;
 
     @Column(name = "\"ST_ID\"")
-    private Long stId;
+    private Long stId; // POST entity GNL_ST
 
     @Column(name = "\"CDATE\"")
     private LocalDateTime cdate;

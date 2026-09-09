@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+/** ACADEMY_APP: forma yapılan başvurunun kimlik, okul ve puan satırı. */
 @Getter
 @Setter
 @NoArgsConstructor
@@ -69,13 +70,13 @@ public class AcademyApp extends BaseEntity {
     private LocalDate gradDate;
 
     @Column(name = "\"UNI_SCORE\"", nullable = false)
-    private Integer uniScore = 0;
+    private Integer uniScore = 0; // UNIVERSITY.SCORE kopyası
 
     @Column(name = "\"DEP_SCORE\"", nullable = false)
     private Integer depScore = 0;
 
     @Column(name = "\"TOTAL_SCORE\"", nullable = false)
-    private Integer totalScore = 0;
+    private Integer totalScore = 0; // uni + bölüm + cevap puanları
 
     @Column(name = "\"INTERVIEW_SCORE\"", nullable = false)
     private Integer interviewScore = 0;

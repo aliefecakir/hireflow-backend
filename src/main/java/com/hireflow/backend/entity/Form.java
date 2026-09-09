@@ -22,6 +22,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+/** FORM: akademi başvuru formu; SDATE/EDATE penceresi, ORGANIZATION bağlanır. */
 @Getter
 @Setter
 @NoArgsConstructor
@@ -49,7 +50,7 @@ public class Form extends BaseEntity {
     private String descr;
 
     @Column(name = "\"IS_ACTV\"", nullable = false, columnDefinition = "int2")
-    private Short isActv = (short) 1;
+    private Short isActv = (short) 1; // 1 aktif, 0 süresi dolmuş / kapatılmış
 
     @Column(name = "\"SDATE\"", nullable = false)
     private LocalDateTime sdate;

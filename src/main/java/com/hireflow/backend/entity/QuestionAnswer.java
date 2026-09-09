@@ -16,6 +16,7 @@ import lombok.Setter;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
+/** QUESTION_ANSWER: akademi başvurusunun bir soruya cevabı ve skoru. */
 @Getter
 @Setter
 @NoArgsConstructor

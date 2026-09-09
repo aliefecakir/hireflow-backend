@@ -2,6 +2,7 @@ package com.hireflow.backend.dto;
 
 import java.util.UUID;
 
+/** Profil deneyim satırı (okuma). */
 public record ExperienceDto(
         UUID experienceId,
         String corpName,

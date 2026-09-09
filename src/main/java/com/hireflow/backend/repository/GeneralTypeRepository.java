@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
+/** GNL_TP tip sözlüğü; aktif liste ve kod arama. */
 @Repository
 public interface GeneralTypeRepository extends JpaRepository<GeneralType, Long> {
 

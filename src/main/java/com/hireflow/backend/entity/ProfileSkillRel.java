@@ -13,6 +13,7 @@ import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+/** PRFL_SKILL_REL: profil ↔ yetenek köprüsü. */
 @Entity
 @Table(name = "\"PRFL_SKILL_REL\"")
 public class ProfileSkillRel {

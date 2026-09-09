@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
+/** GNL_ST durum sözlüğü; entity + kısa kod. */
 @Repository
 public interface GnlStRepository extends JpaRepository<GnlSt, Long> {
 

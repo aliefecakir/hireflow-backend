@@ -49,7 +49,7 @@ public class PostServiceImpl implements PostService {
         GnlSt activeStatus = resolvePostStatus("ACTV");
         Set<UUID> appliedPostIds = currentUserId == null
                 ? Set.of()
-                : new HashSet<>(applicationRepository.findPostIdsByCandidateId(currentUserId));
+                : new HashSet<>(applicationRepository.findPostIdsByCandidateId(currentUserId)); // applied bayrağı
         return toResponseList(
                 postRepository.findAllByStIdOrderByCdateDesc(activeStatus.getGnlStId()),
                 appliedPostIds
@@ -134,7 +134,7 @@ public class PostServiceImpl implements PostService {
     }
 
     private GnlSt resolvePostStatus(String statusCode) {
-        return gnlStRepository.findByEntCodeNameAndShrtCode(POST_ENTITY_CODE, statusCode)
+        return gnlStRepository.findByEntCodeNameAndShrtCode(POST_ENTITY_CODE, statusCode) // POST / ACTV|PASS|DRFT
                 .orElseThrow(() -> new RuntimeException(
                         "Status not found for entity POST with code: " + statusCode));
     }

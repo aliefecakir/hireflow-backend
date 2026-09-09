@@ -20,6 +20,7 @@ public record CreateFormRequest(
         @Valid List<FormQuestionRequest> questions
 ) {
 
+    /** Forma bağlanacak soru (sıra serviste yeniden yazılır). */
     public record FormQuestionRequest(
             @NotNull Long questionId,
             Integer ordNo,

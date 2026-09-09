@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
+/** İlan başvurusu: aktif POST kontrolü, çift başvuru, APP/WAIT statü, legacy kod map. */
 @Service
 @Transactional(readOnly = true)
 public class ApplicationServiceImpl implements ApplicationService {
@@ -29,7 +30,7 @@ public class ApplicationServiceImpl implements ApplicationService {
     private static final String POST_ENTITY_CODE = "POST";
     private static final String ACTIVE_POST_CODE = "ACTV";
     private static final String DEFAULT_APP_STATUS = "WAIT";
-    private static final String LEGACY_WAIT_STATUS = "DISPATCHED";
+    private static final String LEGACY_WAIT_STATUS = "DISPATCHED"; // eski kod uyumu
 
     private final ApplicationRepository applicationRepository;
     private final PostRepository postRepository;
@@ -69,7 +70,7 @@ public class ApplicationServiceImpl implements ApplicationService {
             throw new BadRequestException("Bu ilana zaten başvurdunuz");
         }
 
-        GnlSt waitStatus = resolveDefaultAppStatus();
+        GnlSt waitStatus = resolveDefaultAppStatus(); // APP/WAIT (eski: DISPATCHED)
 
         Application application = new Application();
         application.setPost(post);
@@ -149,7 +150,7 @@ public class ApplicationServiceImpl implements ApplicationService {
         }
         String code = statusCode.trim().toUpperCase();
         return gnlStRepository.findByEntCodeNameAndShrtCode(APP_ENTITY_CODE, code)
-                .or(() -> switch (code) {
+                .or(() -> switch (code) { // yeni kod -> eski GNL_ST kodu
                     case "WAIT" -> gnlStRepository.findByEntCodeNameAndShrtCode(APP_ENTITY_CODE, "DISPATCHED");
                     case "REVIEW" -> gnlStRepository.findByEntCodeNameAndShrtCode(APP_ENTITY_CODE, "PROCESS");
                     case "APPR" -> gnlStRepository.findByEntCodeNameAndShrtCode(APP_ENTITY_CODE, "APPRV");
@@ -193,7 +194,7 @@ public class ApplicationServiceImpl implements ApplicationService {
         Class<?> typeToScan = user.getClass();
         while (typeToScan != null && typeToScan != Object.class) {
             try {
-                java.lang.reflect.Field field = typeToScan.getDeclaredField(fieldName);
+                java.lang.reflect.Field field = typeToScan.getDeclaredField(fieldName); // Lombok getter proxy
                 field.setAccessible(true);
                 return type.cast(field.get(user));
             } catch (NoSuchFieldException ignored) {

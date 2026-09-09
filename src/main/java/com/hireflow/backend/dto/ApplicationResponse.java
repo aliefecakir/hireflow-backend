@@ -3,6 +3,7 @@ package com.hireflow.backend.dto;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+/** İlan başvurusu yanıtı: ilan + aday + GNL_ST. */
 public record ApplicationResponse(
         UUID appId,
         UUID postId,
@@ -18,6 +19,6 @@ public record ApplicationResponse(
         LocalDateTime appliedDate
 ) {
 
-    public record Status(String shrtCode, String name, String descr) {
+    public record Status(String shrtCode, String name, String descr) { // APP GNL_ST
     }
 }

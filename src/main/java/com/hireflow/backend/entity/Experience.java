@@ -10,6 +10,7 @@ import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+/** EXPERIENCE: profil iş deneyimi; STLL_WRKG=1 ise EDATE boş. */
 @Entity
 @Table(name = "\"EXPERIENCE\"")
 public class Experience {

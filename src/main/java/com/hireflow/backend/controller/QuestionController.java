@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/** Soru bankası: tip listesi, kullanım kontrolü, CRUD. */
 @RestController
 @RequestMapping("/api/academy/questions")
 public class QuestionController {
@@ -24,23 +25,27 @@ public class QuestionController {
         this.questionService = questionService;
     }
 
+    /** Tüm sorular + şıklar + kaç formda kullanıldığı. */
     @GetMapping
     @PreAuthorize("hasRole('ACADEMY_MNGR')")
     public ResponseEntity<List<QuestionResponse>> getActiveQuestions() {
         return ResponseEntity.ok(questionService.getActiveQuestions());
     }
 
+    /** Public: GNL_TP'den soru tipleri (SNGL/MULT/OPEN...). */
     @GetMapping("/types")
     public ResponseEntity<List<QuestionTypeResponse>> getActiveQuestionTypes() {
         return ResponseEntity.ok(questionService.getActiveQuestionTypes());
     }
 
+    /** Soru form/cevap kullanımında mı; silinebilir mi. */
     @GetMapping("/{id}/usage")
     @PreAuthorize("hasRole('ACADEMY_MNGR')")
     public ResponseEntity<QuestionUsageResponse> getQuestionUsage(@PathVariable("id") Long questionId) {
         return ResponseEntity.ok(questionService.getQuestionUsage(questionId));
     }
 
+    /** Soru + şıkları oluşturur. */
     @PostMapping
     @PreAuthorize("hasRole('ACADEMY_MNGR')")
     public ResponseEntity<QuestionResponse> createQuestion(
@@ -50,6 +55,7 @@ public class QuestionController {
                 .body(questionService.createQuestion(request));
     }
 
+    /** Kullanımdaysa sınırlı güncelleme; değilse tam güncelleme. */
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ACADEMY_MNGR')")
     public ResponseEntity<QuestionResponse> updateQuestion(
@@ -59,6 +65,7 @@ public class QuestionController {
         return ResponseEntity.ok(questionService.updateQuestion(questionId, request));
     }
 
+    /** Kullanılmayan soruyu ve şıklarını siler. */
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ACADEMY_MNGR')")
     public ResponseEntity<Void> deleteQuestion(@PathVariable("id") Long questionId) {

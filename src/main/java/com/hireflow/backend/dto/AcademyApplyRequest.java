@@ -24,6 +24,7 @@ public record AcademyApplyRequest(
         @Valid List<AnswerRequest> answers
 ) {
 
+    /** Tek bir form sorusunun cevabı. */
     public record AnswerRequest(
             @NotNull Long questionId,
             Long questionChoiceId,

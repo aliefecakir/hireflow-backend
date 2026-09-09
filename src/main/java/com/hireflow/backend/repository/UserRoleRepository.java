@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.UUID;
 
+/** USER_ROLE; JWT authority üretimi. */
 @Repository
 public interface UserRoleRepository extends JpaRepository<UserRole, UUID> {
     

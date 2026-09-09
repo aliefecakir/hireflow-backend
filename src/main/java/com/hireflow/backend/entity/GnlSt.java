@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
+/** GNL_ST: entity bazlı durum sözlüğü (POST, APP, ACADEMY_APP). */
 @Entity
 @Table(name = "\"GNL_ST\"")
 public class GnlSt {

@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+/** Akademi formuna başvuru ve form bazlı başvuru listesi. */
 @RestController
 @RequestMapping("/api/academy/forms")
 public class AcademyApplicationController {
@@ -27,6 +28,7 @@ public class AcademyApplicationController {
         this.academyAppService = academyAppService;
     }
 
+    /** Bir formun tüm akademi başvurularını (yönetici) listeler. */
     @GetMapping("/{formId}/applications")
     @PreAuthorize("hasRole('ACADEMY_MNGR')")
     public ResponseEntity<List<FormApplicationResponse>> getFormApplications(
@@ -35,6 +37,7 @@ public class AcademyApplicationController {
         return ResponseEntity.ok(academyAppService.getFormApplications(formId));
     }
 
+    /** Public: kimlik doğrulamasız akademi formu başvurusu. */
     @PostMapping("/{formId}/apply")
     public ResponseEntity<AcademyApplyResponse> applyToForm(
             @PathVariable("formId") Long formId,

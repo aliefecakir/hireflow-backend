@@ -11,6 +11,7 @@ import com.hireflow.backend.entity.Organization;
 import com.hireflow.backend.entity.Question;
 import com.hireflow.backend.entity.QuestionChoice;
 import com.hireflow.backend.exception.BadRequestException;
+import com.hireflow.backend.repository.AcademyAppRepository;
 import com.hireflow.backend.repository.FormQuestionRelRepository;
 import com.hireflow.backend.repository.FormRepository;
 import com.hireflow.backend.repository.GeneralTypeRepository;
@@ -24,17 +25,20 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
+/** Form CRUD, soru bağlama, süresi dolanları pasife çekme. */
 @Service
 @Transactional(readOnly = true)
 public class FormServiceImpl implements FormService {
 
     private static final UUID SYSTEM_USER_ID = UUID.fromString("11111111-1111-1111-1111-111111111111");
     private static final Short ACTIVE = FormWindow.ACTIVE;
-    private static final Short CANDIDATE_QUESTION = 0;
+    private static final Short CANDIDATE_QUESTION = 0; // isAssmt=0 aday sorusu
     private static final Short DEFAULT_REQUIRED = 1;
 
     private final FormRepository formRepository;
@@ -42,19 +46,22 @@ public class FormServiceImpl implements FormService {
     private final OrganizationRepository organizationRepository;
     private final QuestionRepository questionRepository;
     private final GeneralTypeRepository generalTypeRepository;
+    private final AcademyAppRepository academyAppRepository;
 
     public FormServiceImpl(
             FormRepository formRepository,
             FormQuestionRelRepository formQuestionRelRepository,
             OrganizationRepository organizationRepository,
             QuestionRepository questionRepository,
-            GeneralTypeRepository generalTypeRepository
+            GeneralTypeRepository generalTypeRepository,
+            AcademyAppRepository academyAppRepository
     ) {
         this.formRepository = formRepository;
         this.formQuestionRelRepository = formQuestionRelRepository;
         this.organizationRepository = organizationRepository;
         this.questionRepository = questionRepository;
         this.generalTypeRepository = generalTypeRepository;
+        this.academyAppRepository = academyAppRepository;
     }
 
     @Override
@@ -64,7 +71,10 @@ public class FormServiceImpl implements FormService {
         List<Form> forms = includeInactive
                 ? formRepository.findAllByOrderBySdateDesc()
                 : formRepository.findByIsActvOrderBySdateDesc(ACTIVE);
-        return forms.stream().map(this::toFormResponse).toList();
+        Map<Long, Long> applicationCounts = applicationCountByFormId();
+        return forms.stream()
+                .map((form) -> toFormResponse(form, applicationCounts.getOrDefault(form.getFormId(), 0L)))
+                .toList();
     }
 
     @Override
@@ -147,7 +157,7 @@ public class FormServiceImpl implements FormService {
     }
 
     private void replaceQuestions(Form form, List<CreateFormRequest.FormQuestionRequest> items) {
-        formQuestionRelRepository.deleteByForm_FormId(form.getFormId());
+        formQuestionRelRepository.deleteByForm_FormId(form.getFormId()); // eski bağları sil
         formQuestionRelRepository.flush();
         if (items == null || items.isEmpty()) {
             return;
@@ -174,7 +184,7 @@ public class FormServiceImpl implements FormService {
     @Transactional
     public void deactivateExpiredForms() {
         LocalDateTime now = LocalDateTime.now();
-        List<Form> expired = formRepository.findByIsActvAndEdateBefore(ACTIVE, now);
+        List<Form> expired = formRepository.findByIsActvAndEdateBefore(ACTIVE, now); // aktif + EDATE geçmiş
         if (expired.isEmpty()) {
             return;
         }
@@ -186,7 +196,23 @@ public class FormServiceImpl implements FormService {
         formRepository.saveAll(expired);
     }
 
+    private Map<Long, Long> applicationCountByFormId() {
+        Map<Long, Long> counts = new HashMap<>();
+        for (Object[] row : academyAppRepository.countGroupedByFormId()) {
+            if (row == null || row.length < 2 || row[0] == null || row[1] == null) continue;
+            counts.put(((Number) row[0]).longValue(), ((Number) row[1]).longValue());
+        }
+        return counts;
+    }
+
     private FormResponse toFormResponse(Form form) {
+        long applicationCount = form.getFormId() == null
+                ? 0L
+                : academyAppRepository.countByForm_FormId(form.getFormId());
+        return toFormResponse(form, applicationCount);
+    }
+
+    private FormResponse toFormResponse(Form form, long applicationCount) {
         Organization organization = form.getOrganization();
         return new FormResponse(
                 form.getFormId(),
@@ -196,7 +222,8 @@ public class FormServiceImpl implements FormService {
                 organization == null ? null : organization.getName(),
                 form.getIsActv(),
                 form.getSdate(),
-                form.getEdate()
+                form.getEdate(),
+                applicationCount
         );
     }
 

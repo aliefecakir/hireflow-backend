@@ -37,12 +37,13 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+/** Akademi değerlendirme: detay DTO, mülakat cevapları, manuel puan, total yeniden hesap. */
 @Service
 @Transactional(readOnly = true)
 public class AcademyEvaluationServiceImpl implements AcademyEvaluationService {
 
-    private static final Short CANDIDATE_QUESTION = 0;
-    private static final Short ASSESSMENT_QUESTION = 1;
+    private static final Short CANDIDATE_QUESTION = 0; // aday formu
+    private static final Short ASSESSMENT_QUESTION = 1; // mülakat
     private static final Short OTHER_CHOICE = 1;
 
     private final AcademyAppRepository academyAppRepository;
@@ -307,6 +308,8 @@ public class AcademyEvaluationServiceImpl implements AcademyEvaluationService {
         List<QuestionAnswer> existingAnswers = questionAnswerRepository
                 .findByAcademyApp_AcademyAppIdAndQuestion_QuestionId(appId, manualScore.questionId());
 
+        // "Diğer" şıkkı varsa onun max'ı; yoksa açık uçlu maxScore; otomatik şıklıysa hata
+
         List<QuestionAnswer> otherAnswers = existingAnswers.stream()
                 .filter(answer -> answer.getQuestionChoice() != null
                         && OTHER_CHOICE.equals(answer.getQuestionChoice().getIsOther()))
@@ -358,6 +361,7 @@ public class AcademyEvaluationServiceImpl implements AcademyEvaluationService {
     }
 
     private int recalculateTotalScore(AcademyApp app) {
+        // uni + bölüm + tüm QUESTION_ANSWER.score toplamı
         int uniScore = app.getUniScore() != null ? app.getUniScore() : 0;
         int depScore = app.getDepScore() != null ? app.getDepScore() : 0;
         return uniScore + depScore + questionAnswerRepository

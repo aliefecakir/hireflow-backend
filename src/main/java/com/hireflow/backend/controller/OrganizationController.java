@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+/** Akademi organizasyonları: liste, oluşturma, aktif/pasif. */
 @RestController
 @RequestMapping("/api/academy/organizations")
 @PreAuthorize("hasRole('ACADEMY_MNGR')")
@@ -30,6 +31,7 @@ public class OrganizationController {
         this.organizationService = organizationService;
     }
 
+    /** includeInactive=true ise pasif organizasyonlar da gelir. */
     @GetMapping
     public ResponseEntity<List<OrganizationResponse>> getOrganizations(
             @RequestParam(name = "includeInactive", defaultValue = "false") boolean includeInactive
@@ -37,6 +39,7 @@ public class OrganizationController {
         return ResponseEntity.ok(organizationService.getOrganizations(includeInactive));
     }
 
+    /** Yeni organizasyon; varsayılan IS_ACTV=1. */
     @PostMapping
     public ResponseEntity<OrganizationResponse> createOrganization(
             @Valid @RequestBody CreateOrganizationRequest request
@@ -45,6 +48,7 @@ public class OrganizationController {
                 .body(organizationService.createOrganization(request));
     }
 
+    /** Sadece aktiflik bayrağını günceller (0/1). */
     @PutMapping("/{organizationId}")
     public ResponseEntity<OrganizationResponse> updateOrganization(
             @PathVariable("organizationId") Long organizationId,

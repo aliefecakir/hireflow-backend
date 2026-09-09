@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.UUID;
 
+/** Profil-deneyim köprüsü; experience fetch. */
 @Repository
 public interface ProfileExpRelRepository extends JpaRepository<ProfileExpRel, UUID> {
 

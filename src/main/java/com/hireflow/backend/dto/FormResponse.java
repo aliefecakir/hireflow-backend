@@ -13,6 +13,7 @@ public record FormResponse(
         String organizationName,
         Short isActv,
         LocalDateTime sdate,
-        LocalDateTime edate
+        LocalDateTime edate,
+        Long applicationCount
 ) {
 }

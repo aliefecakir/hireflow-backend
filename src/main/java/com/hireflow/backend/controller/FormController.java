@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+/** Akademi form CRUD + aday soru listesi. */
 @RestController
 @RequestMapping("/api/academy/forms")
 public class FormController {
@@ -32,6 +33,7 @@ public class FormController {
         this.formService = formService;
     }
 
+    /** Liste: herkese aktif formlar; ACADEMY_MNGR includeInactive=true ile pasifleri de görür. */
     @GetMapping
     public ResponseEntity<List<FormResponse>> getForms(
             @RequestParam(name = "includeInactive", defaultValue = "false") boolean includeInactive,
@@ -40,6 +42,7 @@ public class FormController {
         return ResponseEntity.ok(formService.getForms(includeInactive && hasAcademyManagerRole(authentication)));
     }
 
+    /** Yönetici form detayı (aday + mülakat soruları). */
     @GetMapping("/{formId}")
     @PreAuthorize("hasRole('ACADEMY_MNGR')")
     public ResponseEntity<FormDetailResponse> getFormDetail(
@@ -48,6 +51,7 @@ public class FormController {
         return ResponseEntity.ok(formService.getFormDetail(formId));
     }
 
+    /** Public: adayın dolduracağı sorular (isAssmt=0). */
     @GetMapping("/{formId}/questions")
     public ResponseEntity<List<FormQuestionResponse>> getCandidateQuestions(
             @PathVariable("formId") Long formId
@@ -55,12 +59,14 @@ public class FormController {
         return ResponseEntity.ok(formService.getCandidateQuestions(formId));
     }
 
+    /** Yeni form + FORM_QUESTION_REL satırları. */
     @PostMapping
     @PreAuthorize("hasRole('ACADEMY_MNGR')")
     public ResponseEntity<FormResponse> createForm(@Valid @RequestBody CreateFormRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(formService.createForm(request));
     }
 
+    /** Form alanlarını günceller; soru ilişkilerini baştan yazar. */
     @PutMapping("/{formId}")
     @PreAuthorize("hasRole('ACADEMY_MNGR')")
     public ResponseEntity<FormResponse> updateForm(
@@ -70,6 +76,7 @@ public class FormController {
         return ResponseEntity.ok(formService.updateForm(formId, request));
     }
 
+    /** JWT authorities içinde ROLE_ACADEMY_MNGR var mı. */
     private boolean hasAcademyManagerRole(Authentication authentication) {
         if (authentication == null) {
             return false;

@@ -1,10 +1,12 @@
 spring:
   application:
     name: hireflow-backend
+  config:
+    import: optional:file:./.env[.properties]
   datasource:
-    url: jdbc:postgresql://aws-0-ap-northeast-1.pooler.supabase.com:6543/postgres?sslmode=require&prepareThreshold=0
-    username: postgres.tsdxurkrxhfwrpdgpwmn
-    password: asdfgg160ggq
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
     driver-class-name: org.postgresql.Driver
     hikari:
       maximum-pool-size: 5
@@ -24,4 +26,4 @@ spring:
 
 supabase:
   jwt:
-    jwk-set-uri: https://tsdxurkrxhfwrpdgpwmn.supabase.co/auth/v1/.well-known/jwks.json
+    jwk-set-uri: ${SUPABASE_JWT_JWK_SET_URI}

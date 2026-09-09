@@ -42,5 +42,6 @@ $RECYCLE.BIN/
 *.log
 .env
 .env.*
+!.env.example
 application-secret.properties
 application-dev.yml

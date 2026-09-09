@@ -7,6 +7,7 @@ import com.hireflow.backend.dto.UpdateOrganizationRequest;
 
 import java.util.List;
 
+/** Akademi ORGANIZATION CRUD. */
 public interface OrganizationService {
 
     List<OrganizationLookupResponse> getActiveOrganizations();

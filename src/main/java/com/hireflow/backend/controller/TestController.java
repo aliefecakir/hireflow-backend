@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/** JWT / rol erişimini denemek için geçici test uçları. */
 @RestController
 @RequestMapping("/api/v1/test")
 public class TestController {

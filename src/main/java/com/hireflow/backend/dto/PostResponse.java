@@ -18,6 +18,6 @@ public record PostResponse(
         LocalDateTime udate
 ) {
 
-    public record Status(String shrtCode, String name) {
+    public record Status(String shrtCode, String name) { // GNL_ST özeti
     }
 }

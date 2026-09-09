@@ -12,7 +12,7 @@ import java.util.UUID;
  */
 public interface PostService {
 
-    List<PostResponse> getActivePosts(UUID currentUserId);
+    List<PostResponse> getActivePosts(UUID currentUserId); // ACTV + applied bayrağı
 
     List<PostResponse> getAllPostsForAdmin(String statusCode);
 

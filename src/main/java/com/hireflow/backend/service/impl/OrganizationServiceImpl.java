@@ -16,12 +16,13 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
+/** Organizasyon listeleme, oluşturma, aktif/pasif. */
 @Service
 @Transactional(readOnly = true)
 public class OrganizationServiceImpl implements OrganizationService {
 
     private static final UUID SYSTEM_USER_ID = UUID.fromString("11111111-1111-1111-1111-111111111111");
-    private static final Short ACTIVE = 1;
+    private static final Short ACTIVE = 1; // IS_ACTV
     private static final Short INACTIVE = 0;
 
     private final OrganizationRepository organizationRepository;
@@ -32,6 +33,7 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     @Override
     public List<OrganizationLookupResponse> getActiveOrganizations() {
+        // id + name (dropdown)
         return organizationRepository.findByIsActvOrderByNameAsc(ACTIVE).stream()
                 .map(organization -> new OrganizationLookupResponse(
                         organization.getOrganizationId(),

@@ -13,6 +13,7 @@ public record EvaluateAcademyAppRequest(
         @Valid List<ManualScoreRequest> manualScores // Açık uçlu sorular için manuel puanlar
 ) {
 
+    /** Mülakat şıkkı seçimi veya serbest metin. */
     public record EvaluationAnswerRequest(
             @NotNull Long questionId,
             Long questionChoiceId,
@@ -20,6 +21,7 @@ public record EvaluateAcademyAppRequest(
     ) {
     }
 
+    /** Açık uçlu / "diğer" cevaba yönetici puanı. */
     public record ManualScoreRequest(
             @NotNull Long questionId,
             @NotNull Integer score

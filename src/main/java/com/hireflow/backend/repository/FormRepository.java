@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/** FORM listeleri; organization graph. */
 @Repository
 public interface FormRepository extends JpaRepository<Form, Long> {
 
@@ -15,7 +16,7 @@ public interface FormRepository extends JpaRepository<Form, Long> {
     List<Form> findByIsActvOrderBySdateDesc(Short isActv);
 
     @EntityGraph(attributePaths = "organization")
-    List<Form> findByIsActvAndEdateBefore(Short isActv, LocalDateTime edate);
+    List<Form> findByIsActvAndEdateBefore(Short isActv, LocalDateTime edate); // scheduler: süresi dolanlar
 
     @EntityGraph(attributePaths = "organization")
     List<Form> findAllByOrderBySdateDesc();

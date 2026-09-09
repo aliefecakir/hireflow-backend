@@ -32,6 +32,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+/** Soru bankası: tip filtreleme, kullanım korumalı güncelleme/silme. */
 @Service
 @Transactional(readOnly = true)
 public class QuestionServiceImpl implements QuestionService {
@@ -39,6 +40,7 @@ public class QuestionServiceImpl implements QuestionService {
     private static final UUID SYSTEM_USER_ID = UUID.fromString("11111111-1111-1111-1111-111111111111");
     private static final Short DEFAULT_FLAG_OFF = 0;
     private static final Short ACTIVE = 1;
+    // GNL_TP.shrtCode / isim eşlemesi için aday kodlar
     private static final Set<String> QUESTION_TYPE_CODES = Set.of(
             "SNGL", "SINGLE", "MULT", "MULTI", "OPEN", "TEXT", "TSS", "CSS", "AU", "FILE", "CV", "DATE", "DT"
     );
@@ -102,6 +104,7 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     private boolean isQuestionType(GeneralType type) {
+        // ENT_CODE_NAME / isim / SHRT_CODE ile GNL_TP satırını soru tipi say
         String ent = type.getEntCodeName() == null ? "" : type.getEntCodeName().toUpperCase(Locale.ROOT);
         String name = type.getName() == null ? "" : type.getName().toLowerCase(Locale.ROOT);
         String code = type.getShrtCode() == null ? "" : type.getShrtCode().toUpperCase(Locale.ROOT);

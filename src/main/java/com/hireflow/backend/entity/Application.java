@@ -15,6 +15,7 @@ import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+/** APP: adayın iş ilanına başvurusu (POST + CNDT_ID). */
 @Entity
 @Table(name = "\"APP\"")
 public class Application {
@@ -34,7 +35,7 @@ public class Application {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "\"ST_ID\"", referencedColumnName = "\"GNL_ST_ID\"")
-    private GnlSt status;
+    private GnlSt status; // WAIT/REVIEW/APPR/REJ
 
     @Column(name = "\"CDATE\"")
     private LocalDateTime cdate;

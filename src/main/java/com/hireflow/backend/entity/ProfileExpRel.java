@@ -13,6 +13,7 @@ import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+/** PRFL_EXP_REL: profil ↔ deneyim köprüsü. */
 @Entity
 @Table(name = "\"PRFL_EXP_REL\"")
 public class ProfileExpRel {

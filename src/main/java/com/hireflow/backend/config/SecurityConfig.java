@@ -30,13 +30,14 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
+/** Supabase JWT doğrulama, CORS ve endpoint yetkilerini buradan tanımlar. */
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
     @Value("${supabase.jwt.jwk-set-uri}")
-    private String jwkSetUri;
+    private String jwkSetUri; // JWKS adresi (public key buradan çekilir)
     
     private final JwtAuthConverter jwtAuthConverter;
 
@@ -44,21 +45,26 @@ public class SecurityConfig {
         this.jwtAuthConverter = jwtAuthConverter;
     }
 
+    /** HTTP güvenlik zinciri: hangi URL açık, hangisi JWT ister. */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(AbstractHttpConfigurer::disable)
+            .csrf(AbstractHttpConfigurer::disable) // REST + JWT; CSRF token yok
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .sessionManagement(session -> 
-                session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                session.sessionCreationPolicy(SessionCreationPolicy.STATELESS) // session tutulmaz
             )
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/v1/test/public").permitAll()
+                .requestMatchers(HttpMethod.OPTIONS, "/api/parameters/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/parameters/**").permitAll()
                 .requestMatchers(HttpMethod.OPTIONS, "/api/academy/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/academy/forms").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/academy/forms/*/questions").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/academy/forms/{formId}/questions").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/academy/questions/types").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/academy/universities").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/academy/departments").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/academy/forms/*/apply").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/academy/forms/{formId}/apply").permitAll()
                 .requestMatchers("/api/**").authenticated()
@@ -66,14 +72,15 @@ public class SecurityConfig {
             )
             .oauth2ResourceServer(oauth2 -> oauth2
                 .jwt(jwt -> jwt
-                    .decoder(jwtDecoder())
-                    .jwtAuthenticationConverter(jwtAuthConverter)
+                    .decoder(jwtDecoder()) // imza doğrulama
+                    .jwtAuthenticationConverter(jwtAuthConverter) // DB rollerini ROLE_* yapar
                 )
             );
 
         return http.build();
     }
 
+    /** Supabase ES256 JWT'lerini JWKS ile doğrular. */
     @Bean
     public JwtDecoder jwtDecoder() {
         try {
@@ -94,6 +101,7 @@ public class SecurityConfig {
         }
     }
 
+    /** Frontend origin'lerine (3000/5173) CORS izni verir. */
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();

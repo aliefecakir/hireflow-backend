@@ -40,11 +40,12 @@ import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+/** Profil yükle/oluştur, deneyim-skill-dil senkronu, 8 alanlık tamamlanma. */
 @Service
 public class ProfileServiceImpl implements ProfileService {
 
     private static final short ACTIVE = 1;
-    private static final int COMPLETION_FIELD_COUNT = 8;
+    private static final int COMPLETION_FIELD_COUNT = 8; // 8 alan = %100
     private static final int SKILL_SEARCH_DEFAULT_LIMIT = 10;
     private static final int SKILL_SEARCH_MAX_LIMIT = 50;
 
@@ -104,7 +105,7 @@ public class ProfileServiceImpl implements ProfileService {
         }
 
         List<Experience> experiences = syncExperiences(profile, request.experiences(), currentUserId);
-        List<Skill> skills = syncSkills(profile, request.skillIds(), currentUserId);
+        List<Skill> skills = syncSkills(profile, request.skillIds(), currentUserId); // replace-all
         List<Lang> languages = syncLanguages(profile, request.langIds(), currentUserId);
 
         applyCompletion(profile, experiences, skills, languages);
@@ -283,7 +284,7 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     private List<Skill> syncSkills(Profile profile, List<UUID> skillIds, UUID currentUserId) {
-        profileSkillRelRepository.deleteByProfile_ProfileId(profile.getProfileId());
+        profileSkillRelRepository.deleteByProfile_ProfileId(profile.getProfileId()); // mevcut skill bağlarını sıfırla
         profileSkillRelRepository.flush();
 
         if (skillIds == null || skillIds.isEmpty()) {
@@ -345,7 +346,7 @@ public class ProfileServiceImpl implements ProfileService {
             List<Lang> languages
     ) {
         int percentage = completionPercentage(profile, experiences, skills, languages);
-        profile.setIsCmpltd((short) (percentage == 100 ? 1 : 0));
+        profile.setIsCmpltd((short) (percentage == 100 ? 1 : 0)); // 8/8 doluysa 1
     }
 
     private int completionPercentage(

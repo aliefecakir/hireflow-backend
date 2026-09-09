@@ -13,6 +13,7 @@ import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+/** PRFL_LANG_REL: profil ↔ dil köprüsü. */
 @Entity
 @Table(name = "\"PRFL_LANG_REL\"")
 public class ProfileLangRel {

@@ -20,6 +20,7 @@ public record UpdateQuestionRequest(
         @Valid List<ChoiceUpdate> choices
 ) {
 
+    /** id dolu = mevcut şık (puan/sıra); id null = yeni şık. */
     public record ChoiceUpdate(
             Long id, // Mevcut şık için zorunlu; yeni şık için null
             String choiceText,

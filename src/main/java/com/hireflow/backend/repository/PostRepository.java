@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.UUID;
 
+/** POST ilanları; statüye göre liste. */
 @Repository
 public interface PostRepository extends JpaRepository<Post, UUID> {
 

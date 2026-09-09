@@ -9,6 +9,7 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+/** Ortak denetim kolonları: CDATE, UDATE, CUSER, UUSER. */
 @Getter
 @Setter
 @MappedSuperclass
@@ -29,7 +30,7 @@ public abstract class BaseEntity {
     @PrePersist
     protected void onCreate() {
         if (cdate == null) {
-            cdate = LocalDateTime.now();
+            cdate = LocalDateTime.now(); // insert anında oluşturma zamanı
         }
     }
 }

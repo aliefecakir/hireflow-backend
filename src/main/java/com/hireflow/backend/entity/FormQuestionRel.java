@@ -16,6 +16,7 @@ import lombok.Setter;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
+/** FORM_QUESTION_REL: formu soruya bağlar (sıra + zorunluluk). */
 @Getter
 @Setter
 @NoArgsConstructor

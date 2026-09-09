@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
+/** ACADEMY_APP sorguları; üniversite/bölüm/form graph fetch. */
 @Repository
 public interface AcademyAppRepository extends JpaRepository<AcademyApp, Long> {
 
@@ -19,4 +20,9 @@ public interface AcademyAppRepository extends JpaRepository<AcademyApp, Long> {
 
     @EntityGraph(attributePaths = {"university", "department"})
     List<AcademyApp> findByForm_FormIdOrderByAcademyAppIdDesc(Long formId);
+
+    long countByForm_FormId(Long formId);
+
+    @Query("select a.form.formId, count(a) from AcademyApp a group by a.form.formId")
+    List<Object[]> countGroupedByFormId();
 }

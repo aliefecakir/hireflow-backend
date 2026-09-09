@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.UUID;
 
+/** Profil-skill köprüsü; skill fetch. */
 @Repository
 public interface ProfileSkillRelRepository extends JpaRepository<ProfileSkillRel, UUID> {
 

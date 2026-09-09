@@ -24,6 +24,7 @@ public record AcademyAppDetailsResponse(
         List<InterviewCriterion> interviewCriteria
 ) {
 
+    /** Adayın forma verdiği cevap + şıklar + manuel puan bayrağı. */
     public record CandidateAnswer(
             Long questionId,
             String questionText,
@@ -49,6 +50,7 @@ public record AcademyAppDetailsResponse(
         }
     }
 
+    /** Mülakat kriteri (isAssmt=1) ve varsa önceki seçim. */
     public record InterviewCriterion(
             Long questionId,
             String questionText,

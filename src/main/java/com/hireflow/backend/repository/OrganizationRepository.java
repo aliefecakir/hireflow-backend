@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+/** ORGANIZATION; aktif/tüm liste. */
 @Repository
 public interface OrganizationRepository extends JpaRepository<Organization, Long> {
 
