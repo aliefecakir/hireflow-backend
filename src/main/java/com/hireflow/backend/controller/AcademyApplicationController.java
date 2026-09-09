@@ -3,6 +3,7 @@ package com.hireflow.backend.controller;
 import com.hireflow.backend.dto.AcademyApplyRequest;
 import com.hireflow.backend.dto.AcademyApplyResponse;
 import com.hireflow.backend.dto.FormApplicationResponse;
+import com.hireflow.backend.security.AcademyRoles;
 import com.hireflow.backend.service.AcademyAppService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -30,7 +31,7 @@ public class AcademyApplicationController {
 
     /** Bir formun tüm akademi başvurularını (yönetici) listeler. */
     @GetMapping("/{formId}/applications")
-    @PreAuthorize("hasRole('ACADEMY_MNGR')")
+    @PreAuthorize(AcademyRoles.READ)
     public ResponseEntity<List<FormApplicationResponse>> getFormApplications(
             @PathVariable("formId") Long formId
     ) {

@@ -3,6 +3,7 @@ package com.hireflow.backend.controller;
 import com.hireflow.backend.dto.CreateOrganizationRequest;
 import com.hireflow.backend.dto.OrganizationResponse;
 import com.hireflow.backend.dto.UpdateOrganizationRequest;
+import com.hireflow.backend.security.AcademyRoles;
 import com.hireflow.backend.service.OrganizationService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -22,7 +23,7 @@ import java.util.List;
 /** Akademi organizasyonları: liste, oluşturma, aktif/pasif. */
 @RestController
 @RequestMapping("/api/academy/organizations")
-@PreAuthorize("hasRole('ACADEMY_MNGR')")
+@PreAuthorize(AcademyRoles.WRITE)
 public class OrganizationController {
 
     private final OrganizationService organizationService;

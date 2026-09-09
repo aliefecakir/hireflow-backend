@@ -5,6 +5,7 @@ import com.hireflow.backend.dto.QuestionResponse;
 import com.hireflow.backend.dto.QuestionTypeResponse;
 import com.hireflow.backend.dto.QuestionUsageResponse;
 import com.hireflow.backend.dto.UpdateQuestionRequest;
+import com.hireflow.backend.security.AcademyRoles;
 import com.hireflow.backend.service.QuestionService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -27,7 +28,7 @@ public class QuestionController {
 
     /** Tüm sorular + şıklar + kaç formda kullanıldığı. */
     @GetMapping
-    @PreAuthorize("hasRole('ACADEMY_MNGR')")
+    @PreAuthorize(AcademyRoles.WRITE)
     public ResponseEntity<List<QuestionResponse>> getActiveQuestions() {
         return ResponseEntity.ok(questionService.getActiveQuestions());
     }
@@ -40,14 +41,14 @@ public class QuestionController {
 
     /** Soru form/cevap kullanımında mı; silinebilir mi. */
     @GetMapping("/{id}/usage")
-    @PreAuthorize("hasRole('ACADEMY_MNGR')")
+    @PreAuthorize(AcademyRoles.WRITE)
     public ResponseEntity<QuestionUsageResponse> getQuestionUsage(@PathVariable("id") Long questionId) {
         return ResponseEntity.ok(questionService.getQuestionUsage(questionId));
     }
 
     /** Soru + şıkları oluşturur. */
     @PostMapping
-    @PreAuthorize("hasRole('ACADEMY_MNGR')")
+    @PreAuthorize(AcademyRoles.WRITE)
     public ResponseEntity<QuestionResponse> createQuestion(
             @Valid @RequestBody CreateQuestionRequest request
     ) {
@@ -57,7 +58,7 @@ public class QuestionController {
 
     /** Kullanımdaysa sınırlı güncelleme; değilse tam güncelleme. */
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ACADEMY_MNGR')")
+    @PreAuthorize(AcademyRoles.WRITE)
     public ResponseEntity<QuestionResponse> updateQuestion(
             @PathVariable("id") Long questionId,
             @Valid @RequestBody UpdateQuestionRequest request
@@ -67,7 +68,7 @@ public class QuestionController {
 
     /** Kullanılmayan soruyu ve şıklarını siler. */
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ACADEMY_MNGR')")
+    @PreAuthorize(AcademyRoles.WRITE)
     public ResponseEntity<Void> deleteQuestion(@PathVariable("id") Long questionId) {
         questionService.deleteQuestion(questionId);
         return ResponseEntity.noContent().build();

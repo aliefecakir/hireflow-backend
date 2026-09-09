@@ -31,9 +31,6 @@ public class UserRole {
     @Column(name = "IS_ADMIN", columnDefinition = "int2")
     private Short isAdmin;
 
-    @Column(name = "ST_ID")
-    private Long stId;
-
     @Column(name = "IS_ACTV", columnDefinition = "int2")
     private Short isActv;
 

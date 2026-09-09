@@ -9,6 +9,7 @@ import com.hireflow.backend.dto.ManualScoreResponse;
 import com.hireflow.backend.dto.UpdateAcademyAppStatusRequest;
 import com.hireflow.backend.entity.User;
 import com.hireflow.backend.repository.UserRepository;
+import com.hireflow.backend.security.AcademyRoles;
 import com.hireflow.backend.service.AcademyAppService;
 import com.hireflow.backend.service.AcademyEvaluationService;
 import jakarta.validation.Valid;
@@ -30,7 +31,6 @@ import java.util.UUID;
 /** Akademi yöneticisinin başvuru detay, puanlama ve durum güncelleme API'si. */
 @RestController
 @RequestMapping("/api/academy/applications")
-@PreAuthorize("hasRole('ACADEMY_MNGR')")
 public class AcademyEvaluationController {
 
     private final AcademyEvaluationService academyEvaluationService;
@@ -49,12 +49,14 @@ public class AcademyEvaluationController {
 
     /** GNL_ST'teki akademi başvuru durumlarını listeler. */
     @GetMapping("/statuses")
+    @PreAuthorize(AcademyRoles.READ)
     public ResponseEntity<List<AcademyAppStatusResponse>> getApplicationStatuses() {
         return ResponseEntity.ok(academyAppService.getApplicationStatuses());
     }
 
     /** Aday cevapları + mülakat kriterlerini birlikte döner. */
     @GetMapping("/{appId}/details")
+    @PreAuthorize(AcademyRoles.READ)
     public ResponseEntity<AcademyAppDetailsResponse> getApplicationDetails(
             @PathVariable("appId") Long appId
     ) {
@@ -63,6 +65,7 @@ public class AcademyEvaluationController {
 
     /** Mülakat şıklarını kaydeder, manuel puanları uygular, total/interview skorunu yazar. */
     @PostMapping("/{appId}/evaluate")
+    @PreAuthorize(AcademyRoles.WRITE)
     public ResponseEntity<AcademyEvaluateResponse> evaluateApplication(
             @PathVariable("appId") Long appId,
             @Valid @RequestBody EvaluateAcademyAppRequest request,
@@ -73,6 +76,7 @@ public class AcademyEvaluationController {
 
     /** Tek bir açık uçlu / "diğer" cevabına manuel puan basar. */
     @PostMapping("/{appId}/manual-score")
+    @PreAuthorize(AcademyRoles.WRITE)
     public ResponseEntity<ManualScoreResponse> saveManualScore(
             @PathVariable("appId") Long appId,
             @Valid @RequestBody EvaluateAcademyAppRequest.ManualScoreRequest request,
@@ -83,6 +87,7 @@ public class AcademyEvaluationController {
 
     /** Başvuru ST_ID ve status açıklamasını günceller. */
     @PutMapping("/{appId}/status")
+    @PreAuthorize(AcademyRoles.WRITE)
     public ResponseEntity<FormApplicationResponse> updateApplicationStatus(
             @PathVariable("appId") Long appId,
             @Valid @RequestBody UpdateAcademyAppStatusRequest request,

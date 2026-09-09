@@ -19,6 +19,8 @@ public interface GeneralTypeRepository extends JpaRepository<GeneralType, Long> 
      * @return Optional<GeneralType>
      */
     Optional<GeneralType> findByShrtCode(String shrtCode);
+
+    Optional<GeneralType> findByShrtCodeIgnoreCase(String shrtCode);
     
     /**
      * Entity code name ile GeneralTyp bulur
