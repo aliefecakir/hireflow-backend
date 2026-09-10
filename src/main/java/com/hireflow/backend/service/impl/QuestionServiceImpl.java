@@ -42,6 +42,7 @@ public class QuestionServiceImpl implements QuestionService {
     private static final Short ACTIVE = 1;
     // GNL_TP.shrtCode / isim eşlemesi için aday kodlar
     private static final Set<String> QUESTION_TYPE_CODES = Set.of(
+            "SINGLE_CHOICE", "MULTIPLE_CHOICE",
             "SNGL", "SINGLE", "MULT", "MULTI", "OPEN", "TEXT", "TSS", "CSS", "AU", "FILE", "CV", "DATE", "DT"
     );
 

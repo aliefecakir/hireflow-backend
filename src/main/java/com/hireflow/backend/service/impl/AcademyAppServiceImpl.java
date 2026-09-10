@@ -133,7 +133,8 @@ public class AcademyAppServiceImpl implements AcademyAppService {
         app.setUuser(evaluatorId);
         app.setUdate(LocalDateTime.now());
 
-        return toFormApplicationResponse(academyAppRepository.save(app), status);
+        AcademyApp saved = academyAppRepository.save(app);
+        return toFormApplicationResponse(saved, status);
     }
 
     @Override

@@ -33,7 +33,7 @@ public class QuestionController {
         return ResponseEntity.ok(questionService.getActiveQuestions());
     }
 
-    /** Public: GNL_TP'den soru tipleri (SNGL/MULT/OPEN...). */
+    /** Public: GNL_TP'den soru tipleri (SINGLE_CHOICE/MULTIPLE_CHOICE/OPEN...). */
     @GetMapping("/types")
     public ResponseEntity<List<QuestionTypeResponse>> getActiveQuestionTypes() {
         return ResponseEntity.ok(questionService.getActiveQuestionTypes());
