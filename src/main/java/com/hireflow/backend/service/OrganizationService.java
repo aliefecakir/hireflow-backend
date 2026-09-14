@@ -6,6 +6,7 @@ import com.hireflow.backend.dto.OrganizationResponse;
 import com.hireflow.backend.dto.UpdateOrganizationRequest;
 
 import java.util.List;
+import java.util.UUID;
 
 /** Akademi ORGANIZATION CRUD. */
 public interface OrganizationService {
@@ -14,7 +15,11 @@ public interface OrganizationService {
 
     List<OrganizationResponse> getOrganizations(boolean includeInactive);
 
-    OrganizationResponse createOrganization(CreateOrganizationRequest request);
+    OrganizationResponse createOrganization(CreateOrganizationRequest request, UUID currentUserId);
 
-    OrganizationResponse updateOrganization(Long organizationId, UpdateOrganizationRequest request);
+    OrganizationResponse updateOrganization(
+            Long organizationId,
+            UpdateOrganizationRequest request,
+            UUID currentUserId
+    );
 }

@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.UUID;
 
 /** Akademi form CRUD + aday soru listesi. */
 @RestController
@@ -62,8 +65,12 @@ public class FormController {
     /** Yeni form + FORM_QUESTION_REL satırları. */
     @PostMapping
     @PreAuthorize(AcademyRoles.WRITE)
-    public ResponseEntity<FormResponse> createForm(@Valid @RequestBody CreateFormRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(formService.createForm(request));
+    public ResponseEntity<FormResponse> createForm(
+            @Valid @RequestBody CreateFormRequest request,
+            @AuthenticationPrincipal Jwt jwt
+    ) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(formService.createForm(request, currentUserId(jwt)));
     }
 
     /** Form alanlarını günceller; soru ilişkilerini baştan yazar. */
@@ -71,8 +78,16 @@ public class FormController {
     @PreAuthorize(AcademyRoles.WRITE)
     public ResponseEntity<FormResponse> updateForm(
             @PathVariable("formId") Long formId,
-            @Valid @RequestBody CreateFormRequest request
+            @Valid @RequestBody CreateFormRequest request,
+            @AuthenticationPrincipal Jwt jwt
     ) {
-        return ResponseEntity.ok(formService.updateForm(formId, request));
+        return ResponseEntity.ok(formService.updateForm(formId, request, currentUserId(jwt)));
+    }
+
+    private UUID currentUserId(Jwt jwt) {
+        if (jwt == null || jwt.getSubject() == null || jwt.getSubject().isBlank()) {
+            throw new IllegalArgumentException("Oturum bilgisi alınamadı.");
+        }
+        return UUID.fromString(jwt.getSubject());
     }
 }

@@ -37,13 +37,16 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class QuestionServiceImpl implements QuestionService {
 
-    private static final UUID SYSTEM_USER_ID = UUID.fromString("11111111-1111-1111-1111-111111111111");
     private static final Short DEFAULT_FLAG_OFF = 0;
     private static final Short ACTIVE = 1;
     // GNL_TP.shrtCode / isim eşlemesi için aday kodlar
     private static final Set<String> QUESTION_TYPE_CODES = Set.of(
-            "SINGLE_CHOICE", "MULTIPLE_CHOICE",
-            "SNGL", "SINGLE", "MULT", "MULTI", "OPEN", "TEXT", "TSS", "CSS", "AU", "FILE", "CV", "DATE", "DT"
+            "SINGLE_CHOICE",
+            "MULTIPLE_CHOICE",
+            "MULTIPLE_CHOIC",
+            "OPEN_ENDED",
+            "FILE",
+            "DATE"
     );
 
     private final QuestionRepository questionRepository;
@@ -80,17 +83,8 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Override
     public List<QuestionTypeResponse> getActiveQuestionTypes() {
-        List<GeneralType> activeTypes = generalTypeRepository.findByIsActvOrderByNameAsc(ACTIVE);
-        List<QuestionTypeResponse> questionTypes = activeTypes.stream()
+        return generalTypeRepository.findByIsActvOrderByNameAsc(ACTIVE).stream()
                 .filter(this::isQuestionType)
-                .map(this::toQuestionTypeResponse)
-                .toList();
-
-        if (!questionTypes.isEmpty()) {
-            return questionTypes;
-        }
-
-        return activeTypes.stream()
                 .map(this::toQuestionTypeResponse)
                 .toList();
     }
@@ -105,33 +99,21 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     private boolean isQuestionType(GeneralType type) {
-        // ENT_CODE_NAME / isim / SHRT_CODE ile GNL_TP satırını soru tipi say
-        String ent = type.getEntCodeName() == null ? "" : type.getEntCodeName().toUpperCase(Locale.ROOT);
-        String name = type.getName() == null ? "" : type.getName().toLowerCase(Locale.ROOT);
-        String code = type.getShrtCode() == null ? "" : type.getShrtCode().toUpperCase(Locale.ROOT);
-
-        if (ent.contains("QUESTION") || ent.contains("QTYPE")) {
-            return true;
-        }
-        if (name.contains("seçmeli") || name.contains("uçlu") || name.contains("single")
-                || name.contains("multi") || name.contains("open") || name.contains("text")
-                || name.contains("cv") || name.contains("dosya") || name.contains("file")
-                || name.contains("tarih") || name.contains("date")) {
-            return true;
-        }
-        return QUESTION_TYPE_CODES.contains(code);
+        String ent = type.getEntCodeName() == null ? "" : type.getEntCodeName().trim().toUpperCase(Locale.ROOT);
+        String code = type.getShrtCode() == null ? "" : type.getShrtCode().trim().toUpperCase(Locale.ROOT);
+        return "QUESTION".equals(ent) || QUESTION_TYPE_CODES.contains(code);
     }
 
     @Override
     @Transactional
-    public QuestionResponse createQuestion(CreateQuestionRequest request) {
+    public QuestionResponse createQuestion(CreateQuestionRequest request, UUID currentUserId) {
         Question question = new Question();
         question.setQuestionText(request.questionText());
         question.setTpId(request.tpId());
         question.setMinScore(request.minScore());
         question.setMaxScore(request.maxScore());
         question.setIsAssmt(request.isAssmt() != null ? request.isAssmt() : DEFAULT_FLAG_OFF);
-        question.setCuser(SYSTEM_USER_ID);
+        question.setCuser(currentUserId);
 
         Question savedQuestion = questionRepository.save(question);
 
@@ -144,7 +126,7 @@ public class QuestionServiceImpl implements QuestionService {
                 choice.setScore(choiceRequest.score() != null ? choiceRequest.score() : 0);
                 choice.setOrdNo(choiceRequest.ordNo());
                 choice.setIsOther(choiceRequest.isOther() != null ? choiceRequest.isOther() : DEFAULT_FLAG_OFF);
-                choice.setCuser(SYSTEM_USER_ID);
+                choice.setCuser(currentUserId);
                 choices.add(choice);
             }
         }
@@ -187,7 +169,11 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Override
     @Transactional
-    public QuestionResponse updateQuestion(Long questionId, UpdateQuestionRequest request) {
+    public QuestionResponse updateQuestion(
+            Long questionId,
+            UpdateQuestionRequest request,
+            UUID currentUserId
+    ) {
         Question question = questionRepository.findById(questionId)
                 .orElseThrow(() -> new NoSuchElementException("Soru bulunamadı: " + questionId));
         
@@ -211,7 +197,7 @@ public class QuestionServiceImpl implements QuestionService {
                         if (choiceUpdate.ordNo() != null) {
                             choice.setOrdNo(choiceUpdate.ordNo());
                         }
-                        choice.setUuser(SYSTEM_USER_ID);
+                        choice.setUuser(currentUserId);
                         questionChoiceRepository.save(choice);
                     } else {
                         if (choiceUpdate.choiceText() == null || choiceUpdate.choiceText().isBlank()) {
@@ -223,7 +209,7 @@ public class QuestionServiceImpl implements QuestionService {
                         choice.setScore(choiceUpdate.score() != null ? choiceUpdate.score() : 0);
                         choice.setOrdNo(choiceUpdate.ordNo() != null ? choiceUpdate.ordNo() : 0);
                         choice.setIsOther(choiceUpdate.isOther() != null ? choiceUpdate.isOther() : DEFAULT_FLAG_OFF);
-                        choice.setCuser(SYSTEM_USER_ID);
+                        choice.setCuser(currentUserId);
                         questionChoiceRepository.save(choice);
                     }
                 }
@@ -282,14 +268,14 @@ public class QuestionServiceImpl implements QuestionService {
                     choice.setScore(choiceUpdate.score() != null ? choiceUpdate.score() : 0);
                     choice.setOrdNo(choiceUpdate.ordNo());
                     choice.setIsOther(choiceUpdate.isOther() != null ? choiceUpdate.isOther() : DEFAULT_FLAG_OFF);
-                    choice.setCuser(SYSTEM_USER_ID);
+                    choice.setCuser(currentUserId);
                     newChoices.add(choice);
                 }
                 questionChoiceRepository.saveAll(newChoices);
             }
         }
         
-        question.setUuser(SYSTEM_USER_ID);
+        question.setUuser(currentUserId);
         Question saved = questionRepository.save(question);
         
         // Güncel şıklarla birlikte yükle

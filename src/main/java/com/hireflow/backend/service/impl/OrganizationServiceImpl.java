@@ -21,7 +21,6 @@ import java.util.UUID;
 @Transactional(readOnly = true)
 public class OrganizationServiceImpl implements OrganizationService {
 
-    private static final UUID SYSTEM_USER_ID = UUID.fromString("11111111-1111-1111-1111-111111111111");
     private static final Short ACTIVE = 1; // IS_ACTV
     private static final Short INACTIVE = 0;
 
@@ -52,12 +51,12 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     @Override
     @Transactional
-    public OrganizationResponse createOrganization(CreateOrganizationRequest request) {
+    public OrganizationResponse createOrganization(CreateOrganizationRequest request, UUID currentUserId) {
         Organization organization = new Organization();
         organization.setName(request.name());
         organization.setDescr(request.descr());
         organization.setIsActv(ACTIVE);
-        organization.setCuser(SYSTEM_USER_ID);
+        organization.setCuser(currentUserId);
 
         Organization saved = organizationRepository.save(organization);
         return toResponse(saved);
@@ -65,7 +64,11 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     @Override
     @Transactional
-    public OrganizationResponse updateOrganization(Long organizationId, UpdateOrganizationRequest request) {
+    public OrganizationResponse updateOrganization(
+            Long organizationId,
+            UpdateOrganizationRequest request,
+            UUID currentUserId
+    ) {
         Organization organization = organizationRepository.findById(organizationId)
                 .orElseThrow(() -> new NoSuchElementException("Organizasyon bulunamadı."));
 
@@ -75,7 +78,7 @@ public class OrganizationServiceImpl implements OrganizationService {
         }
 
         organization.setIsActv(isActv);
-        organization.setUuser(SYSTEM_USER_ID);
+        organization.setUuser(currentUserId);
         organization.setUdate(LocalDateTime.now());
         return toResponse(organizationRepository.save(organization));
     }

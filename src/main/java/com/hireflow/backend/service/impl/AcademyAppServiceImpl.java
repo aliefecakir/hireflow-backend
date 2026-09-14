@@ -1,11 +1,13 @@
 package com.hireflow.backend.service.impl;
 
+import com.hireflow.backend.dto.AcademyAppStatusHistoryResponse;
 import com.hireflow.backend.dto.AcademyAppStatusResponse;
 import com.hireflow.backend.dto.AcademyApplyRequest;
 import com.hireflow.backend.dto.AcademyApplyResponse;
 import com.hireflow.backend.dto.FormApplicationResponse;
 import com.hireflow.backend.dto.UpdateAcademyAppStatusRequest;
 import com.hireflow.backend.entity.AcademyApp;
+import com.hireflow.backend.entity.AcademyAppStatusHistory;
 import com.hireflow.backend.entity.Department;
 import com.hireflow.backend.entity.Form;
 import com.hireflow.backend.entity.GnlSt;
@@ -13,8 +15,10 @@ import com.hireflow.backend.entity.Question;
 import com.hireflow.backend.entity.QuestionAnswer;
 import com.hireflow.backend.entity.QuestionChoice;
 import com.hireflow.backend.entity.University;
+import com.hireflow.backend.entity.User;
 import com.hireflow.backend.exception.BadRequestException;
 import com.hireflow.backend.repository.AcademyAppRepository;
+import com.hireflow.backend.repository.AcademyAppStatusHistoryRepository;
 import com.hireflow.backend.repository.DepartmentRepository;
 import com.hireflow.backend.repository.FormQuestionRelRepository;
 import com.hireflow.backend.repository.FormRepository;
@@ -23,6 +27,7 @@ import com.hireflow.backend.repository.QuestionAnswerRepository;
 import com.hireflow.backend.repository.QuestionChoiceRepository;
 import com.hireflow.backend.repository.QuestionRepository;
 import com.hireflow.backend.repository.UniversityRepository;
+import com.hireflow.backend.repository.UserRepository;
 import com.hireflow.backend.service.AcademyAppService;
 import com.hireflow.backend.service.FormService;
 import com.hireflow.backend.util.FormWindow;
@@ -58,10 +63,12 @@ public class AcademyAppServiceImpl implements AcademyAppService {
     private final UniversityRepository universityRepository;
     private final DepartmentRepository departmentRepository;
     private final AcademyAppRepository academyAppRepository;
+    private final AcademyAppStatusHistoryRepository academyAppStatusHistoryRepository;
     private final GnlStRepository gnlStRepository;
     private final QuestionRepository questionRepository;
     private final QuestionChoiceRepository questionChoiceRepository;
     private final QuestionAnswerRepository questionAnswerRepository;
+    private final UserRepository userRepository;
 
     public AcademyAppServiceImpl(
             FormService formService,
@@ -70,10 +77,12 @@ public class AcademyAppServiceImpl implements AcademyAppService {
             UniversityRepository universityRepository,
             DepartmentRepository departmentRepository,
             AcademyAppRepository academyAppRepository,
+            AcademyAppStatusHistoryRepository academyAppStatusHistoryRepository,
             GnlStRepository gnlStRepository,
             QuestionRepository questionRepository,
             QuestionChoiceRepository questionChoiceRepository,
-            QuestionAnswerRepository questionAnswerRepository
+            QuestionAnswerRepository questionAnswerRepository,
+            UserRepository userRepository
     ) {
         this.formService = formService;
         this.formRepository = formRepository;
@@ -81,10 +90,12 @@ public class AcademyAppServiceImpl implements AcademyAppService {
         this.universityRepository = universityRepository;
         this.departmentRepository = departmentRepository;
         this.academyAppRepository = academyAppRepository;
+        this.academyAppStatusHistoryRepository = academyAppStatusHistoryRepository;
         this.gnlStRepository = gnlStRepository;
         this.questionRepository = questionRepository;
         this.questionChoiceRepository = questionChoiceRepository;
         this.questionAnswerRepository = questionAnswerRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -122,7 +133,7 @@ public class AcademyAppServiceImpl implements AcademyAppService {
             UpdateAcademyAppStatusRequest request,
             UUID evaluatorId
     ) {
-        // ST_ID + STATUS_DESCR + evaluatedBy
+        // ST_ID değişince geçmişi ACADEMY_APP_ST_HSTR trigger'ı yazar.
         AcademyApp app = academyAppRepository.findDetailedById(appId)
                 .orElseThrow(() -> new NoSuchElementException("Başvuru bulunamadı."));
         GnlSt status = resolveAcademyStatus(request.stId());
@@ -135,6 +146,41 @@ public class AcademyAppServiceImpl implements AcademyAppService {
 
         AcademyApp saved = academyAppRepository.save(app);
         return toFormApplicationResponse(saved, status);
+    }
+
+    @Override
+    public List<AcademyAppStatusHistoryResponse> getApplicationStatusHistory(Long appId) {
+        if (!academyAppRepository.existsById(appId)) {
+            throw new NoSuchElementException("Başvuru bulunamadı.");
+        }
+
+        List<AcademyAppStatusHistory> rows = academyAppStatusHistoryRepository
+                .findByAcademyAppIdOrderByCdateDescAcademyAppStHstrIdDesc(appId);
+        if (rows.isEmpty()) {
+            return List.of();
+        }
+
+        Set<Long> statusIds = rows.stream()
+                .flatMap(row -> java.util.stream.Stream.of(row.getStId(), row.getPrevStId()))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
+        Map<Long, GnlSt> statuses = statusIds.isEmpty()
+                ? Map.of()
+                : gnlStRepository.findAllById(statusIds).stream()
+                .collect(Collectors.toMap(GnlSt::getGnlStId, Function.identity()));
+
+        Set<UUID> userIds = rows.stream()
+                .map(AcademyAppStatusHistory::getCuser)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
+        Map<UUID, User> users = userIds.isEmpty()
+                ? Map.of()
+                : userRepository.findAllById(userIds).stream()
+                .collect(Collectors.toMap(User::getUserId, Function.identity()));
+
+        return rows.stream()
+                .map(row -> toStatusHistoryResponse(row, statuses, users))
+                .toList();
     }
 
     @Override
@@ -217,6 +263,31 @@ public class AcademyAppServiceImpl implements AcademyAppService {
                 savedApp.getAcademyAppId(),
                 form.getFormId(),
                 savedApp.getStatusDescr()
+        );
+    }
+
+    private AcademyAppStatusHistoryResponse toStatusHistoryResponse(
+            AcademyAppStatusHistory row,
+            Map<Long, GnlSt> statuses,
+            Map<UUID, User> users
+    ) {
+        GnlSt status = row.getStId() == null ? null : statuses.get(row.getStId());
+        GnlSt previous = row.getPrevStId() == null ? null : statuses.get(row.getPrevStId());
+        User actor = row.getCuser() == null ? null : users.get(row.getCuser());
+        String actorName = actor == null
+                ? (SYSTEM_USER_ID.equals(row.getCuser()) ? "Sistem" : null)
+                : (actor.getName() + " " + actor.getSurname()).trim();
+        return new AcademyAppStatusHistoryResponse(
+                row.getAcademyAppStHstrId(),
+                row.getAcademyAppId(),
+                row.getStId(),
+                status == null ? null : status.getName(),
+                row.getPrevStId(),
+                previous == null ? null : previous.getName(),
+                row.getChngRsn(),
+                row.getCdate(),
+                row.getCuser(),
+                actorName == null || actorName.isBlank() ? null : actorName
         );
     }
 

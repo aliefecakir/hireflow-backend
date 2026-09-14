@@ -11,9 +11,12 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 /** Soru bankası: tip listesi, kullanım kontrolü, CRUD. */
 @RestController
@@ -33,7 +36,7 @@ public class QuestionController {
         return ResponseEntity.ok(questionService.getActiveQuestions());
     }
 
-    /** Public: GNL_TP'den soru tipleri (SINGLE_CHOICE/MULTIPLE_CHOICE/OPEN...). */
+    /** Public: GNL_TP'den soru tipleri (ENT_CODE_NAME = QUESTION). */
     @GetMapping("/types")
     public ResponseEntity<List<QuestionTypeResponse>> getActiveQuestionTypes() {
         return ResponseEntity.ok(questionService.getActiveQuestionTypes());
@@ -50,10 +53,11 @@ public class QuestionController {
     @PostMapping
     @PreAuthorize(AcademyRoles.WRITE)
     public ResponseEntity<QuestionResponse> createQuestion(
-            @Valid @RequestBody CreateQuestionRequest request
+            @Valid @RequestBody CreateQuestionRequest request,
+            @AuthenticationPrincipal Jwt jwt
     ) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(questionService.createQuestion(request));
+                .body(questionService.createQuestion(request, currentUserId(jwt)));
     }
 
     /** Kullanımdaysa sınırlı güncelleme; değilse tam güncelleme. */
@@ -61,9 +65,10 @@ public class QuestionController {
     @PreAuthorize(AcademyRoles.WRITE)
     public ResponseEntity<QuestionResponse> updateQuestion(
             @PathVariable("id") Long questionId,
-            @Valid @RequestBody UpdateQuestionRequest request
+            @Valid @RequestBody UpdateQuestionRequest request,
+            @AuthenticationPrincipal Jwt jwt
     ) {
-        return ResponseEntity.ok(questionService.updateQuestion(questionId, request));
+        return ResponseEntity.ok(questionService.updateQuestion(questionId, request, currentUserId(jwt)));
     }
 
     /** Kullanılmayan soruyu ve şıklarını siler. */
@@ -72,5 +77,12 @@ public class QuestionController {
     public ResponseEntity<Void> deleteQuestion(@PathVariable("id") Long questionId) {
         questionService.deleteQuestion(questionId);
         return ResponseEntity.noContent().build();
+    }
+
+    private UUID currentUserId(Jwt jwt) {
+        if (jwt == null || jwt.getSubject() == null || jwt.getSubject().isBlank()) {
+            throw new IllegalArgumentException("Oturum bilgisi alınamadı.");
+        }
+        return UUID.fromString(jwt.getSubject());
     }
 }

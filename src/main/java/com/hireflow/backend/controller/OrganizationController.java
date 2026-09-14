@@ -9,6 +9,8 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.UUID;
 
 /** Akademi organizasyonları: liste, oluşturma, aktif/pasif. */
 @RestController
@@ -43,18 +46,29 @@ public class OrganizationController {
     /** Yeni organizasyon; varsayılan IS_ACTV=1. */
     @PostMapping
     public ResponseEntity<OrganizationResponse> createOrganization(
-            @Valid @RequestBody CreateOrganizationRequest request
+            @Valid @RequestBody CreateOrganizationRequest request,
+            @AuthenticationPrincipal Jwt jwt
     ) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(organizationService.createOrganization(request));
+                .body(organizationService.createOrganization(request, currentUserId(jwt)));
     }
 
     /** Sadece aktiflik bayrağını günceller (0/1). */
     @PutMapping("/{organizationId}")
     public ResponseEntity<OrganizationResponse> updateOrganization(
             @PathVariable("organizationId") Long organizationId,
-            @Valid @RequestBody UpdateOrganizationRequest request
+            @Valid @RequestBody UpdateOrganizationRequest request,
+            @AuthenticationPrincipal Jwt jwt
     ) {
-        return ResponseEntity.ok(organizationService.updateOrganization(organizationId, request));
+        return ResponseEntity.ok(
+                organizationService.updateOrganization(organizationId, request, currentUserId(jwt))
+        );
+    }
+
+    private UUID currentUserId(Jwt jwt) {
+        if (jwt == null || jwt.getSubject() == null || jwt.getSubject().isBlank()) {
+            throw new IllegalArgumentException("Oturum bilgisi alınamadı.");
+        }
+        return UUID.fromString(jwt.getSubject());
     }
 }

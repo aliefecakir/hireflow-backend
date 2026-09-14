@@ -1,5 +1,6 @@
 package com.hireflow.backend.service;
 
+import com.hireflow.backend.dto.AcademyAppStatusHistoryResponse;
 import com.hireflow.backend.dto.AcademyAppStatusResponse;
 import com.hireflow.backend.dto.AcademyApplyRequest;
 import com.hireflow.backend.dto.AcademyApplyResponse;
@@ -17,6 +18,8 @@ public interface AcademyAppService {
     List<FormApplicationResponse> getFormApplications(Long formId); // yönetici liste
 
     List<AcademyAppStatusResponse> getApplicationStatuses(); // GNL_ST / ACADEMY_APP
+
+    List<AcademyAppStatusHistoryResponse> getApplicationStatusHistory(Long appId);
 
     FormApplicationResponse updateApplicationStatus(Long appId, UpdateAcademyAppStatusRequest request, UUID evaluatorId);
 }

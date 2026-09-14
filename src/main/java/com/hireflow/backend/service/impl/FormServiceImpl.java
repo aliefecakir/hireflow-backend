@@ -110,8 +110,12 @@ public class FormServiceImpl implements FormService {
         deactivateExpiredForms();
         Form form = formRepository.findById(formId)
                 .orElseThrow(() -> new NoSuchElementException("Form bulunamadı."));
-        if (!FormWindow.isVisibleToCandidates(form, LocalDateTime.now())) {
+        LocalDateTime now = LocalDateTime.now();
+        if (!FormWindow.isVisibleToCandidates(form, now)) {
             throw new NoSuchElementException("Form bulunamadı.");
+        }
+        if (!FormWindow.hasStarted(form, now)) {
+            throw new BadRequestException("Başvurular henüz başlamadı.");
         }
 
         return formQuestionRelRepository
@@ -123,24 +127,24 @@ public class FormServiceImpl implements FormService {
 
     @Override
     @Transactional
-    public FormResponse createForm(CreateFormRequest request) {
+    public FormResponse createForm(CreateFormRequest request, UUID currentUserId) {
         Form form = new Form();
-        form.setCuser(SYSTEM_USER_ID);
+        form.setCuser(currentUserId);
         applyFormFields(form, request);
         Form savedForm = formRepository.save(form);
-        replaceQuestions(savedForm, request.questions());
+        replaceQuestions(savedForm, request.questions(), currentUserId);
         return toFormResponse(savedForm);
     }
 
     @Override
     @Transactional
-    public FormResponse updateForm(Long formId, CreateFormRequest request) {
+    public FormResponse updateForm(Long formId, CreateFormRequest request, UUID currentUserId) {
         Form form = formRepository.findById(formId)
                 .orElseThrow(() -> new NoSuchElementException("Form bulunamadı."));
         applyFormFields(form, request);
-        form.setUuser(SYSTEM_USER_ID);
+        form.setUuser(currentUserId);
         Form savedForm = formRepository.save(form);
-        replaceQuestions(savedForm, request.questions());
+        replaceQuestions(savedForm, request.questions(), currentUserId);
         return toFormResponse(savedForm);
     }
 
@@ -156,7 +160,11 @@ public class FormServiceImpl implements FormService {
         form.setIsActv(FormWindow.resolveActiveFlag(request.isActv(), request.edate(), LocalDateTime.now()));
     }
 
-    private void replaceQuestions(Form form, List<CreateFormRequest.FormQuestionRequest> items) {
+    private void replaceQuestions(
+            Form form,
+            List<CreateFormRequest.FormQuestionRequest> items,
+            UUID currentUserId
+    ) {
         formQuestionRelRepository.deleteByForm_FormId(form.getFormId()); // eski bağları sil
         formQuestionRelRepository.flush();
         if (items == null || items.isEmpty()) {
@@ -174,7 +182,7 @@ public class FormServiceImpl implements FormService {
             relation.setQuestion(question);
             relation.setOrdNo(ordNo++);
             relation.setIsReq(item.isReq() != null ? item.isReq() : DEFAULT_REQUIRED);
-            relation.setCuser(SYSTEM_USER_ID);
+            relation.setCuser(currentUserId);
             relations.add(relation);
         }
         formQuestionRelRepository.saveAll(relations);

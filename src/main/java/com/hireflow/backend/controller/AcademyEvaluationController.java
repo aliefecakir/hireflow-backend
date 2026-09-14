@@ -1,6 +1,7 @@
 package com.hireflow.backend.controller;
 
 import com.hireflow.backend.dto.AcademyAppDetailsResponse;
+import com.hireflow.backend.dto.AcademyAppStatusHistoryResponse;
 import com.hireflow.backend.dto.AcademyAppStatusResponse;
 import com.hireflow.backend.dto.AcademyEvaluateResponse;
 import com.hireflow.backend.dto.EvaluateAcademyAppRequest;
@@ -65,7 +66,7 @@ public class AcademyEvaluationController {
 
     /** Mülakat şıklarını kaydeder, manuel puanları uygular, total/interview skorunu yazar. */
     @PostMapping("/{appId}/evaluate")
-    @PreAuthorize(AcademyRoles.WRITE)
+    @PreAuthorize(AcademyRoles.EVALUATE)
     public ResponseEntity<AcademyEvaluateResponse> evaluateApplication(
             @PathVariable("appId") Long appId,
             @Valid @RequestBody EvaluateAcademyAppRequest request,
@@ -76,7 +77,7 @@ public class AcademyEvaluationController {
 
     /** Tek bir açık uçlu / "diğer" cevabına manuel puan basar. */
     @PostMapping("/{appId}/manual-score")
-    @PreAuthorize(AcademyRoles.WRITE)
+    @PreAuthorize(AcademyRoles.EVALUATE)
     public ResponseEntity<ManualScoreResponse> saveManualScore(
             @PathVariable("appId") Long appId,
             @Valid @RequestBody EvaluateAcademyAppRequest.ManualScoreRequest request,
@@ -85,9 +86,18 @@ public class AcademyEvaluationController {
         return ResponseEntity.ok(academyEvaluationService.saveManualScore(appId, request, currentUserId(jwt)));
     }
 
+    /** Başvurunun ACADEMY_APP_ST_HSTR durum geçmişi. */
+    @GetMapping("/{appId}/status-history")
+    @PreAuthorize(AcademyRoles.READ)
+    public ResponseEntity<List<AcademyAppStatusHistoryResponse>> getApplicationStatusHistory(
+            @PathVariable("appId") Long appId
+    ) {
+        return ResponseEntity.ok(academyAppService.getApplicationStatusHistory(appId));
+    }
+
     /** Başvuru ST_ID ve status açıklamasını günceller. */
     @PutMapping("/{appId}/status")
-    @PreAuthorize(AcademyRoles.WRITE)
+    @PreAuthorize(AcademyRoles.EVALUATE)
     public ResponseEntity<FormApplicationResponse> updateApplicationStatus(
             @PathVariable("appId") Long appId,
             @Valid @RequestBody UpdateAcademyAppStatusRequest request,

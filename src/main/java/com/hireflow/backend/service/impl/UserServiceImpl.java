@@ -43,7 +43,8 @@ public class UserServiceImpl implements UserService {
             "MNGR",
             "ACADEMY_MNGR",
             "ADMIN",
-            "ACADEMY_VISITOR"
+            "ACADEMY_VISITOR",
+            "EVAL_MNGR"
     );
 
     private final UserRepository userRepository;
