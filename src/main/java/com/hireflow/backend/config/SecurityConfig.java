@@ -14,6 +14,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -26,7 +27,6 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.net.URI;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -50,15 +50,14 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .csrf(AbstractHttpConfigurer::disable) // REST + JWT; CSRF token yok
-            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+            .cors(Customizer.withDefaults())
             .sessionManagement(session -> 
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS) // session tutulmaz
             )
             .authorizeHttpRequests(auth -> auth
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .requestMatchers("/api/v1/test/public").permitAll()
-                .requestMatchers(HttpMethod.OPTIONS, "/api/parameters/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/parameters/**").permitAll()
-                .requestMatchers(HttpMethod.OPTIONS, "/api/academy/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/academy/forms").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/academy/forms/*/questions").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/academy/forms/{formId}/questions").permitAll()
@@ -101,13 +100,25 @@ public class SecurityConfig {
         }
     }
 
-    /** Frontend origin'lerine (3000/5173) CORS izni verir. */
+    /** Local ve Vercel frontend origin'lerine CORS izni verir. */
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://localhost:5173", "https://hireflow-frontend-omega.vercel.app/"));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
-        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowedOriginPatterns(List.of(
+                "https://*.vercel.app",
+                "https://hireflow-frontend-omega.vercel.app",
+                "http://localhost:5173",
+                "http://localhost:3000"
+        ));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
+        configuration.setAllowedHeaders(List.of(
+                "Authorization",
+                "Content-Type",
+                "X-Requested-With",
+                "Accept",
+                "Origin"
+        ));
+        configuration.setExposedHeaders(List.of("Authorization"));
         configuration.setAllowCredentials(true);
         configuration.setMaxAge(3600L);
         
