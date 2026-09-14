@@ -56,6 +56,7 @@ public class AcademyAppServiceImpl implements AcademyAppService {
     private static final String PENDING_SCORE_STATUS_NAME = "Puanlanacak";
     private static final Short OTHER_CHOICE = 1;
     private static final Short CANDIDATE_QUESTION = 0;
+    private static final Short ACTIVE = 1; // IS_ACTV
 
     private final FormService formService;
     private final FormRepository formRepository;
@@ -207,6 +208,14 @@ public class AcademyAppServiceImpl implements AcademyAppService {
                 .orElseThrow(() -> new BadRequestException("Üniversite bulunamadı."));
         Department department = departmentRepository.findById(request.departmentId())
                 .orElseThrow(() -> new BadRequestException("Bölüm bulunamadı."));
+
+        // Form açıkken katalogdan çıkarılmış olabilir; pasif kayıtla başvuru alınmaz.
+        if (!ACTIVE.equals(university.getIsActv())) {
+            throw new BadRequestException("Seçilen üniversite artık başvurulara açık değil.");
+        }
+        if (!ACTIVE.equals(department.getIsActv())) {
+            throw new BadRequestException("Seçilen bölüm artık başvurulara açık değil.");
+        }
 
         int uniScore = university.getScore() != null ? university.getScore() : 0;
         int depScore = department.getScore() != null ? department.getScore() : 0;

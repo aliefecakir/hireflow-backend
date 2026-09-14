@@ -3,6 +3,7 @@ package com.hireflow.backend.entity;
 import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -32,5 +33,11 @@ public abstract class BaseEntity {
         if (cdate == null) {
             cdate = LocalDateTime.now(); // insert anında oluşturma zamanı
         }
+    }
+
+    /** UUSER servis katmanında set edilir; UDATE'i servislere bırakmadan burada damgalarız. */
+    @PreUpdate
+    protected void onUpdate() {
+        udate = LocalDateTime.now();
     }
 }

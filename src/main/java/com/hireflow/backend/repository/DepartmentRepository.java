@@ -11,4 +11,10 @@ import java.util.List;
 public interface DepartmentRepository extends JpaRepository<Department, Long> {
 
     List<Department> findByIsActvOrderByNameAsc(Short isActv);
+
+    List<Department> findAllByOrderByNameAsc();
+
+    boolean existsByNameIgnoreCase(String name);
+
+    boolean existsByNameIgnoreCaseAndDepartmentIdNot(String name, Long departmentId);
 }

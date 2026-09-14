@@ -11,4 +11,10 @@ import java.util.List;
 public interface UniversityRepository extends JpaRepository<University, Long> {
 
     List<University> findByIsActvOrderByNameAsc(Short isActv);
+
+    List<University> findAllByOrderByNameAsc();
+
+    boolean existsByNameIgnoreCase(String name);
+
+    boolean existsByNameIgnoreCaseAndUniversityIdNot(String name, Long universityId);
 }
