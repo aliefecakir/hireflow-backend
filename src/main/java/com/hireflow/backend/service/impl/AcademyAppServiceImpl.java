@@ -22,6 +22,7 @@ import com.hireflow.backend.repository.AcademyAppStatusHistoryRepository;
 import com.hireflow.backend.repository.DepartmentRepository;
 import com.hireflow.backend.repository.FormQuestionRelRepository;
 import com.hireflow.backend.repository.FormRepository;
+import com.hireflow.backend.repository.GeneralTypeRepository;
 import com.hireflow.backend.repository.GnlStRepository;
 import com.hireflow.backend.repository.QuestionAnswerRepository;
 import com.hireflow.backend.repository.QuestionChoiceRepository;
@@ -57,6 +58,7 @@ public class AcademyAppServiceImpl implements AcademyAppService {
     private static final Short OTHER_CHOICE = 1;
     private static final Short CANDIDATE_QUESTION = 0;
     private static final Short ACTIVE = 1; // IS_ACTV
+    private static final String NUMERIC_QUESTION_CODE = "NUMERIC";
 
     private final FormService formService;
     private final FormRepository formRepository;
@@ -66,6 +68,7 @@ public class AcademyAppServiceImpl implements AcademyAppService {
     private final AcademyAppRepository academyAppRepository;
     private final AcademyAppStatusHistoryRepository academyAppStatusHistoryRepository;
     private final GnlStRepository gnlStRepository;
+    private final GeneralTypeRepository generalTypeRepository;
     private final QuestionRepository questionRepository;
     private final QuestionChoiceRepository questionChoiceRepository;
     private final QuestionAnswerRepository questionAnswerRepository;
@@ -80,6 +83,7 @@ public class AcademyAppServiceImpl implements AcademyAppService {
             AcademyAppRepository academyAppRepository,
             AcademyAppStatusHistoryRepository academyAppStatusHistoryRepository,
             GnlStRepository gnlStRepository,
+            GeneralTypeRepository generalTypeRepository,
             QuestionRepository questionRepository,
             QuestionChoiceRepository questionChoiceRepository,
             QuestionAnswerRepository questionAnswerRepository,
@@ -93,6 +97,7 @@ public class AcademyAppServiceImpl implements AcademyAppService {
         this.academyAppRepository = academyAppRepository;
         this.academyAppStatusHistoryRepository = academyAppStatusHistoryRepository;
         this.gnlStRepository = gnlStRepository;
+        this.generalTypeRepository = generalTypeRepository;
         this.questionRepository = questionRepository;
         this.questionChoiceRepository = questionChoiceRepository;
         this.questionAnswerRepository = questionAnswerRepository;
@@ -306,6 +311,16 @@ public class AcademyAppServiceImpl implements AcademyAppService {
                 .orElseThrow(() -> new BadRequestException(
                         "Soru bulunamadı: " + answerRequest.questionId()));
 
+        if (isNumericQuestion(question)) {
+            if (answerRequest.questionChoiceId() != null) {
+                throw new BadRequestException("Sayı girişi sorusuna şık seçilemez.");
+            }
+            String numericText = answerRequest.answerText() == null ? "" : answerRequest.answerText().trim();
+            if (!numericText.matches("\\d+")) {
+                throw new BadRequestException("Bu soruya yalnızca sayı girilebilir.");
+            }
+        }
+
         QuestionChoice choice = null;
         if (answerRequest.questionChoiceId() != null) {
             choice = questionChoiceRepository.findById(answerRequest.questionChoiceId())
@@ -334,6 +349,15 @@ public class AcademyAppServiceImpl implements AcademyAppService {
         }
         answer.setCuser(SYSTEM_USER_ID);
         return answer;
+    }
+
+    private boolean isNumericQuestion(Question question) {
+        if (question.getTpId() == null) {
+            return false;
+        }
+        return generalTypeRepository.findById(question.getTpId())
+                .map(type -> NUMERIC_QUESTION_CODE.equalsIgnoreCase(type.getShrtCode()))
+                .orElse(false);
     }
 
     private Map<Long, GnlSt> loadStatuses(List<AcademyApp> applications) {

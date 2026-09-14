@@ -45,6 +45,7 @@ public class QuestionServiceImpl implements QuestionService {
             "MULTIPLE_CHOICE",
             "MULTIPLE_CHOIC",
             "OPEN_ENDED",
+            "NUMERIC",
             "FILE",
             "DATE"
     );
