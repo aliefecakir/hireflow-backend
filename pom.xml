@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.hireflow</groupId>
     <artifactId>hireflow-backend</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.1</version>
     <name>hireflow-backend</name>
     <description>hireflow-backend</description>
 
