@@ -105,13 +105,16 @@ public class AcademyAppServiceImpl implements AcademyAppService {
     }
 
     @Override
-    public List<FormApplicationResponse> getFormApplications(Long formId) {
+    public List<FormApplicationResponse> getFormApplications(Long formId, List<Long> stIds) {
         // Form yoksa 404; başvurular + GNL_ST isimleri tek seferde map'lenir
         if (!formRepository.existsById(formId)) {
             throw new NoSuchElementException("Form bulunamadı.");
         }
 
-        List<AcademyApp> applications = academyAppRepository.findByForm_FormIdOrderByAcademyAppIdDesc(formId);
+        List<Long> requestedStatusIds = normalizeStatusIds(stIds);
+        List<AcademyApp> applications = requestedStatusIds.isEmpty()
+                ? academyAppRepository.findByForm_FormIdOrderByAcademyAppIdDesc(formId)
+                : academyAppRepository.findByForm_FormIdAndStIdInOrderByAcademyAppIdDesc(formId, requestedStatusIds);
         Map<Long, GnlSt> statuses = loadStatuses(applications);
 
         return applications.stream()
@@ -370,6 +373,25 @@ public class AcademyAppServiceImpl implements AcademyAppService {
         }
         return gnlStRepository.findAllById(statusIds).stream()
                 .collect(Collectors.toMap(GnlSt::getGnlStId, Function.identity()));
+    }
+
+    private List<Long> normalizeStatusIds(List<Long> stIds) {
+        if (stIds == null || stIds.isEmpty()) {
+            return List.of();
+        }
+
+        List<Long> requested = stIds.stream()
+                .filter(Objects::nonNull)
+                .distinct()
+                .toList();
+        if (requested.isEmpty()) {
+            return List.of();
+        }
+
+        return requested.stream()
+                .map(this::resolveAcademyStatus)
+                .map(GnlSt::getGnlStId)
+                .toList();
     }
 
     private GnlSt resolveAcademyStatus(Long stId) {

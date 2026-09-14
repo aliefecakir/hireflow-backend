@@ -15,7 +15,7 @@ public interface AcademyAppService {
 
     AcademyApplyResponse applyToForm(Long formId, AcademyApplyRequest request); // PUBLIC başvuru + otomatik puan
 
-    List<FormApplicationResponse> getFormApplications(Long formId); // yönetici liste
+    List<FormApplicationResponse> getFormApplications(Long formId, List<Long> stIds); // yönetici liste, isteğe bağlı çoklu durum
 
     List<AcademyAppStatusResponse> getApplicationStatuses(); // GNL_ST / ACADEMY_APP
 

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -29,13 +30,14 @@ public class AcademyApplicationController {
         this.academyAppService = academyAppService;
     }
 
-    /** Bir formun tüm akademi başvurularını (yönetici) listeler. */
+    /** Bir formun akademi başvurularını listeler; stId bir veya birden fazla durum seçebilir. */
     @GetMapping("/{formId}/applications")
     @PreAuthorize(AcademyRoles.READ)
     public ResponseEntity<List<FormApplicationResponse>> getFormApplications(
-            @PathVariable("formId") Long formId
+            @PathVariable("formId") Long formId,
+            @RequestParam(name = "stId", required = false) List<Long> stIds
     ) {
-        return ResponseEntity.ok(academyAppService.getFormApplications(formId));
+        return ResponseEntity.ok(academyAppService.getFormApplications(formId, stIds));
     }
 
     /** Public: kimlik doğrulamasız akademi formu başvurusu. */

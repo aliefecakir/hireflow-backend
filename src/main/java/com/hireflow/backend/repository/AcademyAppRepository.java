@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,6 +21,9 @@ public interface AcademyAppRepository extends JpaRepository<AcademyApp, Long> {
 
     @EntityGraph(attributePaths = {"university", "department"})
     List<AcademyApp> findByForm_FormIdOrderByAcademyAppIdDesc(Long formId);
+
+    @EntityGraph(attributePaths = {"university", "department"})
+    List<AcademyApp> findByForm_FormIdAndStIdInOrderByAcademyAppIdDesc(Long formId, Collection<Long> stIds);
 
     long countByForm_FormId(Long formId);
 
