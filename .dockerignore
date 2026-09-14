@@ -1,0 +1,13 @@
+target/
+.git/
+.idea/
+.cursor/
+.vscode/
+.env
+.env.*
+!.env.example
+*.iml
+*.log
+Dockerfile*
+README.md
+HELP.md
