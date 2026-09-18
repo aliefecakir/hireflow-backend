@@ -10,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.NoSuchElementException;
 
-/** GNL_PARM: SHRT_CODE ile tek kayıt. */
 @Service
 @Transactional(readOnly = true)
 public class GeneralParameterServiceImpl implements GeneralParameterService {
